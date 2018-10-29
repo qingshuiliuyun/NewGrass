@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>480</height>
+    <width>396</width>
+    <height>290</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>396</width>
      <height>23</height>
     </rect>
    </property>
@@ -43,6 +43,31 @@
   <action name="actionMap">
    <property name="text">
     <string>Map</string>
+   </property>
+  </action>
+  <action name="actionCreatePoint">
+   <property name="text">
+    <string>CreatePoint</string>
+   </property>
+  </action>
+  <action name="actionRule">
+   <property name="text">
+    <string>Rule</string>
+   </property>
+  </action>
+  <action name="actionUploadWayPoint">
+   <property name="text">
+    <string>UploadWayPoint</string>
+   </property>
+  </action>
+  <action name="actionDownLoadWayPoint">
+   <property name="text">
+    <string>DownLoadWayPoint</string>
+   </property>
+  </action>
+  <action name="actionClearAllPoint">
+   <property name="text">
+    <string>ClearAllPoint</string>
    </property>
   </action>
  </widget>

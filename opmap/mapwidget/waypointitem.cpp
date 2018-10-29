@@ -221,6 +221,42 @@ void WayPointItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
         RefreshToolTip();
         isDragging = true;
     }
+
+
+    if(isDragging)
+    {
+        coord = map->FromLocalToLatLng(this->pos().x(), this->pos().y());
+        QString coord_str = tr("Lat:") + QString::number(coord.Lat(), 'f', 8) + tr("\nLng:") + QString::number(coord.Lng(), 'f', 8)+ tr("\n");
+
+        if(this->Number()>=1)//说明可以计算到上一个点的距离
+        {
+
+            foreach(QGraphicsItem * i, map->childItems()) {
+                WayPointItem *w = qgraphicsitem_cast<WayPointItem *>(i);
+
+                if (w) {
+                    if (w->Number() == (this->Number() - 1)) {
+                        map->Projection()->offSetFromLatLngs(w->Coord(), coord, relativeCoord.distance, relativeCoord.bearing);
+                    }
+                }
+            }
+
+        }
+        else if (myHome) {
+            map->Projection()->offSetFromLatLngs(myHome->Coord(), coord, relativeCoord.distance, relativeCoord.bearing);
+        }
+
+
+
+        QString distance_str = tr("Dst:") + QString::number(relativeCoord.distance) + tr("m\n");
+        QString bearing_str =  tr("Brg:") + QString::number(relativeCoord.bearing * 180 / M_PI) + tr("deg\n");
+        text->setText(coord_str + distance_str + bearing_str);
+        textBG->setRect(text->boundingRect());
+    }
+
+
+
+
     QGraphicsItem::mousePressEvent(event);
 }
 void WayPointItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -252,12 +288,31 @@ void WayPointItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if (isDragging) {
         coord = map->FromLocalToLatLng(this->pos().x(), this->pos().y());
-        QString coord_str = " " + QString::number(coord.Lat(), 'f', 6) + "   " + QString::number(coord.Lng(), 'f', 6);
-        if (myHome) {
+        QString coord_str = tr("Lat:") + QString::number(coord.Lat(), 'f', 8) + tr("\nLng:") + QString::number(coord.Lng(), 'f', 8)+ tr("\n");
+
+        if(this->Number()>=1)//说明可以计算到上一个点的距离
+        {
+
+            foreach(QGraphicsItem * i, map->childItems()) {
+                WayPointItem *w = qgraphicsitem_cast<WayPointItem *>(i);
+
+                if (w) {
+                    if (w->Number() == (this->Number() - 1)) {
+                        map->Projection()->offSetFromLatLngs(w->Coord(), coord, relativeCoord.distance, relativeCoord.bearing);
+                    }
+                }
+            }
+
+        }
+        else if (myHome) {
             map->Projection()->offSetFromLatLngs(myHome->Coord(), coord, relativeCoord.distance, relativeCoord.bearing);
         }
-        QString relativeCoord_str =QString::number(relativeCoord.distance) + "m " + QString::number(relativeCoord.bearing * 180 / M_PI) + "deg";
-        text->setText(coord_str + "\n" + relativeCoord_str);
+
+
+
+        QString distance_str = tr("Dst:") + QString::number(relativeCoord.distance) + tr("m\n");
+        QString bearing_str =  tr("Brg:") + QString::number(relativeCoord.bearing * 180 / M_PI) + tr("deg\n");
+        text->setText(coord_str + distance_str + bearing_str);
         textBG->setRect(text->boundingRect());
         emit localPositionChanged(this->pos(), this);
         emit WPValuesChanged(this);

@@ -210,8 +210,9 @@ private:
     internals::PointLatLng coord; // coordinates of this WayPoint
 
     typedef struct {
+
           float  altitude;//相对海拔
-          float  velocity;//当前点速度
+          float  speed;//当前点速度
           float  radiu;//半径
           qint8  action;//动作
     }_waypoint;

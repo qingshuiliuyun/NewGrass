@@ -32,132 +32,67 @@ public:
     };
 
 
+    typedef struct {
+        uint16_t HEAD;
+        uint16_t CID;
+        uint8_t  SYN;
+        uint16_t LEN;
+        QByteArray Payload;
+        uint16_t SCK;
+
+    }_frametypedef;
 
 
     typedef struct {
-        uint8_t RED;
-        uint8_t GREEN;
-        uint8_t BLUE;
-
-        uint8_t REDCount;
-        uint8_t GREENCount;
-        uint8_t BLUECount;
-
-        uint8_t isControl;
-
-    }_led;
+        uint8_t version;
+        uint8_t heardbeat;
+        uint8_t id;
+    }_heardbeat;
 
 
     typedef struct {
-        uint16_t PWM1;      //TIM1->CH1
-        uint16_t PWM2;      //TIM1->CH2
-        uint16_t PWM3;      //TIM1->CH3
-        uint16_t PWM4;      //TIM1->CH4
-        uint16_t PWM5;      //TIM2->CH1
-        uint16_t PWM6;      //TIM2->CH2
-        uint16_t PWM7;      //TIM2->CH3
-        uint16_t PWM8;      //TIM2->CH4
-        uint16_t PWM9;      //TIM3->CH1
-        uint16_t PWM10;     //TIM3->CH2
-        uint16_t PWM11;     //TIM3->CH3
-        uint16_t PWM12;     //TIM3->CH4
-        uint16_t PWM13;     //TIM4->CH1
-        uint16_t PWM14;     //TIM4->CH2
-        uint16_t PWM15;     //TIM4->CH3
-        uint16_t PWM16;     //TIM4->CH4
-        uint16_t PWM17;     //TIM5->CH1
-        uint16_t PWM18;     //TIM5->CH2
-        uint16_t PWM19;     //TIM5->CH3
-        uint16_t PWM20;     //TIM5->CH4
-        uint16_t PWM21;     //TIM8->CH1
-        uint16_t PWM22;     //TIM8->CH2
-        uint16_t PWM23;     //TIM8->CH3
-        uint16_t PWM24;     //TIM8->CH4
-    }_pwm;
+      float speed_Kp;
+      float speed_Ki;
+      float speed_Kd;
+
+      float distance_Kp;
+      float distance_Ki;
+      float distance_Kd;
+
+      float heading_Kp;
+      float heading_Ki;
+      float heading_Kd;
+
+    }_parameter;
 
     typedef struct {
-        float HL1;
-        float HL2;
-        float HL3;
-        float HL4;
-        float HL5;
-    }_hl;
+        uint8_t fixtype;
+        uint8_t svn;
+        float  altitude;
+        double latitude;
+        double longitude;
+        float  groundspeed;
+        float  course;
+    }_gps;
 
     typedef struct {
-        uint8_t DI0;
-        uint8_t DI1;
-        uint8_t DI2;
-        uint8_t DI3;
-        uint8_t DI4;
-        uint8_t DI5;
-
-        uint8_t DO0;
-        uint8_t DO1;
-        uint8_t DO2;
-        uint8_t DO3;
-        uint8_t DO4;
-        uint8_t DO5;
-    }_diox;
+        float left;
+        float front;
+        float right;
+    }_ultrasonic;
 
     typedef struct {
-
-        uint32_t adc_value[4];
-
-        float Voltage1;
-        float Voltage2;
-        float Voltage3;
-        float Voltage4;
-    }_adc;
+        uint16_t id;
+        float    altitude;
+        double   latitude;
+        double   longitude;
+        float    speed;
+    }_waypoint;
 
     typedef struct {
-        uint16_t Ignition1Flag;
-        uint16_t PumpFlag;
-        uint16_t RPMRegulatorFlag;
-        uint16_t ChokeFlag;
-        uint16_t Ignition2Flag;
-        uint16_t AmbientTemperatur;
-        uint16_t AirPressure;
-        uint16_t ActualFuelPressure;
-        uint16_t FuelPumpDutyCycle;
-        uint16_t ActualJet1DutyCycle;
-        uint16_t ActualRPM;
-        uint16_t ServoPositionThrottleIdle;
-        uint16_t ServoPositionThrottleFull;
-        uint16_t ServoPositionAirClosed;
-        uint16_t ServoPositionAirOpen;
-        uint16_t CHTemperature1;
-        uint16_t CHTemperature2;
-        uint16_t CHTemperature3;
-        uint16_t CHTemperature4;
-        uint16_t IMainPower;
-        uint16_t IIgnition1;
-        uint16_t IIgnition2;
-        uint16_t IServos;
-        uint16_t IPump;
-        uint16_t UMainPower;
-        uint16_t ActualValueThrottlePlate;
-        uint16_t ActualValueAirChoke;
-        uint16_t FirmwareVersionNumber;
-    }_enginestatus;
+        uint16_t currentwaypoint;
+    }_status;
 
-
-    typedef struct {
-        uint16_t Ignition1;
-        uint16_t Pump;
-        uint16_t RPMRegulator;
-        uint16_t Choke;
-        uint16_t Ignition2;
-        uint16_t SetValueRPM;
-        uint16_t StopEngine;
-
-    }_enginecmd;
-
-    typedef struct {
-
-        _enginestatus STATUS;
-      _enginecmd    CMD;
-
-    }_engine;
 
 
 
@@ -199,17 +134,17 @@ public:
         uint32_t ENGINE_Count;
 
 
-        _led LED;
-        _hl  HL;
-        _diox DIO;
-        _adc VOLTAGE;
-        _pwm PWM;
-        _engine ENGINE;
+        _heardbeat HeardBeat;
+        _parameter Parameter;
+        _gps GPS;
+        _ultrasonic Ultrasonic;
+        _waypoint WayPoint;
+        _status Satuts;
 
         _uart U1;
         _uart U2;
 
-    }_hal_io;
+    }_vehicle;
 
 
 
@@ -224,8 +159,18 @@ public:
     bool state_port();
     void stop_port();
 
+    uint16_t CRC_CheckSum (uint8_t *pBuffer,uint8_t Size);
 
-    _hal_io HAL_IO;
+    void R_Decode(QByteArray data);
+
+
+
+
+
+
+
+    _vehicle vehicle;
+    _frametypedef dframe;
 
     QByteArray recievedata;
 

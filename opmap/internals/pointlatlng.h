@@ -42,6 +42,11 @@ struct PointLatLng {
     // TODO Sizelatlng friend PointLatLng operator+(PointLatLng pt, SizeLatLng sz);
 
 private:
+
+    float  course;
+    float  radius;
+    float  speed;
+    float  alt;
     double lat;
     double lng;
     bool   empty;

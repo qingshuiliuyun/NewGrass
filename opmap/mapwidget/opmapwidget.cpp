@@ -66,6 +66,7 @@ OPMapWidget::OPMapWidget(QWidget *parent, Configuration *config) : QGraphicsView
     connect(&mscene, SIGNAL(selectionChanged()), this, SLOT(OnSelectionChanged()));
     SetShowDiagnostics(showDiag);
     this->setMouseTracking(followmouse);
+    //this->setMouseTracking(true);
     SetShowCompass(true);
     QPixmapCache::setCacheLimit(64 * 1024);
 
@@ -240,12 +241,18 @@ void OPMapWidget::mouseMoveEvent(QMouseEvent *event)
     p = map->mapFromParent(p);
     currentmouseposition = map->FromLocalToLatLng(p.x(), p.y());
     emit EmitCurrentMousePosition(currentmouseposition);
+
+
+    //qDebug() << currentmouseposition.Lat() << currentmouseposition.Lng();
+
+
 }
 
 
 void OPMapWidget::mousePressEvent(QMouseEvent *event)
 {
     QGraphicsView::mousePressEvent(event);
+    //qDebug() << event << "map";
     emit MousePressEvent(event);
 }
 

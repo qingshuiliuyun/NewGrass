@@ -27,21 +27,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 include(./SerialPortDialog/SerialPortDialog.pri)
 include (./opmap/mapwidget/mapwidget.pri)
-
+include (./parameter/parameter.pri)
+include (./mission/mission.pri)
+include (./mapDialog/map.pri)
+include (./dlinkinspector/dlinkinspector.pri)
 
 
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    dlink.cpp
+    dlink.cpp \
+    inifile.cpp
 
 HEADERS += \
         mainwindow.h \
-    dlink.h
+    dlink.h \
+    inifile.h
 
 FORMS += \
         mainwindow.ui
 
 CONFIG += mobility
 MOBILITY = 
+
+RESOURCES += \
+    resource/resource.qrc
 

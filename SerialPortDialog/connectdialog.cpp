@@ -53,7 +53,7 @@ int ConnectDialog::exec()
     tiltle = tiltle.replace(" ","");
 
 
-    QSettings *configIni = new QSettings("./connetconfig.ini", QSettings::IniFormat);
+    QSettings *configIni = new QSettings("./config.ini", QSettings::IniFormat);
     QString LastPortName = configIni->value("/"+tiltle+"/Port").toString();
 
     foreach(QSerialPortInfo info, serialInfo->availablePorts())
@@ -117,7 +117,7 @@ void ConnectDialog::accept()
     tiltle = tiltle.simplified();
     tiltle = tiltle.replace(" ","");
 
-    QSettings *configIni = new QSettings("./connetconfig.ini", QSettings::IniFormat);
+    QSettings *configIni = new QSettings("./config.ini", QSettings::IniFormat);
 
     configIni->setValue("/"+tiltle+"/Port",port);
     configIni->setValue("/"+tiltle+"/BaudRate",QString::number(baudrate));

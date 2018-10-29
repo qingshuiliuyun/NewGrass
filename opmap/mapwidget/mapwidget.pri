@@ -21,7 +21,8 @@ SOURCES += $$PWD/mapgraphicitem.cpp \
     $$PWD/mapripper.cpp \
     $$PWD/traillineitem.cpp \
     $$PWD/waypointline.cpp \
-    $$PWD/waypointcircle.cpp
+    $$PWD/waypointcircle.cpp \
+    $$PWD/waypoint.cpp
 
 #LIBS += -L./build \
 #    -lcore \
@@ -44,7 +45,8 @@ HEADERS += $$PWD/mapgraphicitem.h \
     $$PWD/mapripper.h \
     $$PWD/traillineitem.h \
     $$PWD/waypointline.h \
-    $$PWD/waypointcircle.h
+    $$PWD/waypointcircle.h \
+    $$PWD/waypoint.h
 QT += opengl
 QT += network
 QT += sql
