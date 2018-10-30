@@ -6,13 +6,12 @@ Mission::Mission(QWidget *parent) :
     ui(new Ui::Mission)
 {
     ui->setupUi(this);
-    /*ui->setIcon(QIcon(":/img/error.png"));
-    ui->clear->setIcon(QIcon(":/img/error.png"));
-    ui->clear->setIcon(QIcon(":/img/error.png"));
-    ui->clear->setIcon(QIcon(":/img/error.png"));
-    ui->clear->setIcon(QIcon(":/img/error.png"));
-    ui->clear->setIcon(QIcon(":/img/error.png"));
-*/
+    ui->clear_Alt->setIcon(QIcon(":/img/error.png"));
+    ui->clear_Crs->setIcon(QIcon(":/img/error.png"));
+    ui->clear_Lat->setIcon(QIcon(":/img/error.png"));
+    ui->clear_Lng->setIcon(QIcon(":/img/error.png"));
+    ui->clear_Spd->setIcon(QIcon(":/img/error.png"));
+
 
 }
 

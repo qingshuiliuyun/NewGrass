@@ -133,6 +133,10 @@
            <property name="text">
             <string/>
            </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../Parameter/error.png</normaloff>../Parameter/error.png</iconset>
+           </property>
           </widget>
          </item>
         </layout>
@@ -153,6 +157,10 @@
           <widget class="QPushButton" name="clear_Lng">
            <property name="text">
             <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../Parameter/error.png</normaloff>../Parameter/error.png</iconset>
            </property>
           </widget>
          </item>
@@ -175,6 +183,10 @@
            <property name="text">
             <string/>
            </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../Parameter/error.png</normaloff>../Parameter/error.png</iconset>
+           </property>
           </widget>
          </item>
         </layout>
@@ -195,6 +207,10 @@
           <widget class="QPushButton" name="clear_Crs">
            <property name="text">
             <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../Parameter/error.png</normaloff>../Parameter/error.png</iconset>
            </property>
           </widget>
          </item>
