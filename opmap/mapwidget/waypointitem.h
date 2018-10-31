@@ -206,15 +206,22 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    //void mouseClickEvent(QGraphicsSceneMouseEvent *event);
 private:
     internals::PointLatLng coord; // coordinates of this WayPoint
 
     typedef struct {
+        uint16_t id;
+        uint16_t type;//0 point 1 line 2 circle
+        uint16_t action;
+        float  altitude;
+        float  relativeAltitude;
+        double latitude;
+        double longitude;
+        float speed;
+        float course;
 
-          float  altitude;//相对海拔
-          float  speed;//当前点速度
-          float  radiu;//半径
-          qint8  action;//动作
+        QString description;
     }_waypoint;
 
 
@@ -225,6 +232,9 @@ private:
     QString description;
     bool shownumber;
     bool isDragging;
+    bool isTipShow = false;
+
+
     float altitude;
     MapGraphicItem *map;
     int number;

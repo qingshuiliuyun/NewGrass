@@ -201,57 +201,74 @@ void WayPointItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 }
 void WayPointItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+
     if (event->button() == Qt::LeftButton) {
+
         emit waypointdoubleclick(this);
+
     }
 }
 
 void WayPointItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    //qDebug() << event;
     if (event->button() == Qt::LeftButton) {
-        text   = new QGraphicsSimpleTextItem(this);
-        textBG = new QGraphicsRectItem(this);
 
-        textBG->setBrush(Qt::white);
-
-        text->setPen(QPen(Qt::black));
-        text->setPos(10, -picture.height());
-        textBG->setPos(10, -picture.height());
-        text->setZValue(3);
-        RefreshToolTip();
-        isDragging = true;
-    }
-
-
-    if(isDragging)
-    {
-        coord = map->FromLocalToLatLng(this->pos().x(), this->pos().y());
-        QString coord_str = tr("Lat:") + QString::number(coord.Lat(), 'f', 8) + tr("\nLng:") + QString::number(coord.Lng(), 'f', 8)+ tr("\n");
-
-        if(this->Number()>=1)//说明可以计算到上一个点的距离
+        isDragging = true;//一旦按下，就可以执行拖拽
+        if(isTipShow == false)//这时候没有显示，因此需要显示
         {
+            isTipShow = true;
+            text   = new QGraphicsSimpleTextItem(this);
+            textBG = new QGraphicsRectItem(this);
+            textBG->setBrush(Qt::white);
+            text->setPen(QPen(Qt::black));
+            text->setPos(10, -picture.height());
+            textBG->setPos(10, -picture.height());
+            text->setZValue(3);
+            RefreshToolTip();
+            if (this->isSelected())
+            {
+                coord = map->FromLocalToLatLng(this->pos().x(), this->pos().y());
+                QString coord_str = tr("Lat:") + QString::number(coord.Lat(), 'f', 8) + tr("\nLng:") + QString::number(coord.Lng(), 'f', 8)+ tr("\n");
 
-            foreach(QGraphicsItem * i, map->childItems()) {
-                WayPointItem *w = qgraphicsitem_cast<WayPointItem *>(i);
+                if(this->Number()>=1)//说明可以计算到上一个点的距离
+                {
+                    foreach(QGraphicsItem * i, map->childItems()) {
+                        WayPointItem *w = qgraphicsitem_cast<WayPointItem *>(i);
 
-                if (w) {
-                    if (w->Number() == (this->Number() - 1)) {
-                        map->Projection()->offSetFromLatLngs(w->Coord(), coord, relativeCoord.distance, relativeCoord.bearing);
+                        if (w) {
+                            if (w->Number() == (this->Number() - 1)) {
+                                map->Projection()->offSetFromLatLngs(w->Coord(), coord, relativeCoord.distance, relativeCoord.bearing);
+                            }
+                        }
                     }
                 }
+                else if (myHome) {
+                    map->Projection()->offSetFromLatLngs(myHome->Coord(), coord, relativeCoord.distance, relativeCoord.bearing);
+                }
+                QString distance_str = tr("Dst:") + QString::number(relativeCoord.distance) + tr("m\n");
+                QString bearing_str =  tr("Brg:") + QString::number(relativeCoord.bearing * 180 / M_PI) + tr("deg\n");
+                text->setText(coord_str + distance_str + bearing_str);
+                textBG->setRect(text->boundingRect());
             }
-
         }
-        else if (myHome) {
-            map->Projection()->offSetFromLatLngs(myHome->Coord(), coord, relativeCoord.distance, relativeCoord.bearing);
+        else//如果已经显示，那么关闭
+        {
+            isTipShow = false;
+            if (text) {
+                delete text;
+                text = NULL;
+            }
+            if (textBG) {
+                delete textBG;
+                textBG = NULL;
+            }
+            RefreshToolTip();
         }
-
-
-
-        QString distance_str = tr("Dst:") + QString::number(relativeCoord.distance) + tr("m\n");
-        QString bearing_str =  tr("Brg:") + QString::number(relativeCoord.bearing * 180 / M_PI) + tr("deg\n");
-        text->setText(coord_str + distance_str + bearing_str);
-        textBG->setRect(text->boundingRect());
+    }
+    else if(event->button() ==  Qt::RightButton)
+    {
+         qDebug() << event;
     }
 
 
@@ -262,6 +279,7 @@ void WayPointItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void WayPointItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
+        /*
         if (text) {
             delete text;
             text = NULL;
@@ -270,8 +288,10 @@ void WayPointItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             delete textBG;
             textBG = NULL;
         }
+        */
 
         isDragging = false;
+
         RefreshToolTip();
 
 
@@ -286,7 +306,8 @@ void WayPointItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 void WayPointItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (isDragging) {
+    if((isDragging)&&(isTipShow))
+    {
         coord = map->FromLocalToLatLng(this->pos().x(), this->pos().y());
         QString coord_str = tr("Lat:") + QString::number(coord.Lat(), 'f', 8) + tr("\nLng:") + QString::number(coord.Lng(), 'f', 8)+ tr("\n");
 

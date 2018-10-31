@@ -86,7 +86,9 @@ public:
         float    altitude;
         double   latitude;
         double   longitude;
+        float    radius;
         float    speed;
+        float    course;
     }_waypoint;
 
     typedef struct {
