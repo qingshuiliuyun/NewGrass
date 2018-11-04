@@ -141,6 +141,51 @@ WayPointItem::WayPointItem(const internals::PointLatLng &coord, int const & alti
     connect(map, SIGNAL(childSetOpacity(qreal)), this, SLOT(setOpacitySlot(qreal)));
 }
 
+WayPointItem::WayPointItem(_waypoint const &coord, MapGraphicItem *map, wptype type) :  reached(false),  shownumber(true), isDragging(false), map(map), myType(type)
+{
+    Coord().SetLat(coord.latitude);
+    Coord().SetLng(coord.longitude);
+    qDebug() << Coord().Lat()
+             << Coord().Lng();
+    text    = 0;
+    numberI = 0;
+    isMagic = false;
+    picture.load(QString::fromUtf8(":/markers/images/marker.png"));
+    number  = WayPointItem::snumber;
+    //coord.id = number;//把ID好记录好
+    ++WayPointItem::snumber;
+    this->setFlag(QGraphicsItem::ItemIsMovable, true);
+    this->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+    this->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    SetShowNumber(shownumber);
+    RefreshToolTip();
+    RefreshPos();
+    myHome = NULL;
+    QList<QGraphicsItem *> list = map->childItems();
+    foreach(QGraphicsItem * obj, list) {
+        HomeItem *h = qgraphicsitem_cast <HomeItem *>(obj);
+
+        if (h) {
+            myHome = h;
+        }
+    }
+    if (myHome) {
+        map->Projection()->offSetFromLatLngs(myHome->Coord().Lat(),myHome->Coord().Lng(),coord.latitude,coord.longitude, relativeCoord.distance, relativeCoord.bearing);
+        relativeCoord.altitudeRelative = Altitude() - myHome->Altitude();
+        connect(myHome, SIGNAL(homePositionChanged(internals::PointLatLng, float)), this, SLOT(onHomePositionChanged(internals::PointLatLng, float)));
+    }
+    connect(this, SIGNAL(waypointdoubleclick(WayPointItem *)), map, SIGNAL(wpdoubleclicked(WayPointItem *)));
+    emit manualCoordChange(this);
+    connect(map, SIGNAL(childRefreshPosition()), this, SLOT(RefreshPos()));
+    connect(map, SIGNAL(childSetOpacity(qreal)), this, SLOT(setOpacitySlot(qreal)));
+}
+
+
+
+
+
+
+
 WayPointItem::WayPointItem(const distBearingAltitude &relativeCoordenate, const QString &description, MapGraphicItem *map) : relativeCoord(relativeCoordenate), reached(false), description(description), shownumber(true), isDragging(false), map(map)
 {
     myHome = NULL;
@@ -215,8 +260,7 @@ void WayPointItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
 
         isDragging = true;//一旦按下，就可以执行拖拽
-        if(isTipShow == false)//这时候没有显示，因此需要显示
-        {
+
             isTipShow = true;
             text   = new QGraphicsSimpleTextItem(this);
             textBG = new QGraphicsRectItem(this);
@@ -251,20 +295,7 @@ void WayPointItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 text->setText(coord_str + distance_str + bearing_str);
                 textBG->setRect(text->boundingRect());
             }
-        }
-        else//如果已经显示，那么关闭
-        {
-            isTipShow = false;
-            if (text) {
-                delete text;
-                text = NULL;
-            }
-            if (textBG) {
-                delete textBG;
-                textBG = NULL;
-            }
-            RefreshToolTip();
-        }
+
     }
     else if(event->button() ==  Qt::RightButton)
     {
@@ -279,7 +310,7 @@ void WayPointItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void WayPointItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
-        /*
+
         if (text) {
             delete text;
             text = NULL;
@@ -288,7 +319,7 @@ void WayPointItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             delete textBG;
             textBG = NULL;
         }
-        */
+
 
         isDragging = false;
 
@@ -306,7 +337,7 @@ void WayPointItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 void WayPointItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if((isDragging)&&(isTipShow))
+    if(isDragging)
     {
         coord = map->FromLocalToLatLng(this->pos().x(), this->pos().y());
         QString coord_str = tr("Lat:") + QString::number(coord.Lat(), 'f', 8) + tr("\nLng:") + QString::number(coord.Lng(), 'f', 8)+ tr("\n");

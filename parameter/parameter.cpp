@@ -1,6 +1,9 @@
 #include "parameter.h"
 #include "ui_parameter.h"
 
+#include "QDebug"
+#include "string"
+
 Parameter::Parameter(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Parameter)
@@ -17,10 +20,7 @@ Parameter::Parameter(QWidget *parent) :
     header << tr("Type");
     ui->treeWidget->setHeaderLabels(header);
 
-    DLink::_vehicle vehicle;
-
-
-    vehicle.Parameter.distance_Kp = 1;
+    //vehicle.Parameter.distance_Kp = 1;
 
 
     DisplayParameter(vehicle);
@@ -127,32 +127,35 @@ void Parameter::DisplayParameter(DLink::_vehicle vehicle)
 
     HeadingItem->addChildren(childList);
 
-
-
-
     ui->treeWidget->insertTopLevelItems(0,rootList);  //将结点插入部件中
     ui->treeWidget->expandAll(); //全部展开
 }
 
 
+void Parameter::on_treeWidget_clicked(const QModelIndex &index)
+{
+   /* qDebug() << index
+             << index.row()
+             << index.column()
+             << index.model()
+             << index.internalPointer()
+             << index.data();
+   */
+    if(index.column() == 1)
+    {
+        ui->lineEdit->setText(index.data(Qt::DisplayRole).toString());
+    }
+}
 
+void Parameter::on_OK_clicked()
+{
+   QTreeWidgetItem *item =  ui->treeWidget->currentItem();
 
+   item->setData(1,0,ui->lineEdit->text());
 
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void Parameter::on_upload_clicked()
+{
+//组合一下，然后发出去
+}

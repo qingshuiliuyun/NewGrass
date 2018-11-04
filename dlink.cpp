@@ -168,7 +168,10 @@ void DLink::R_Decode(QByteArray data)
 
          case 0x0040://WayPoint
          {
-              memcmp(&vehicle.WayPoint,data+7,dframe.LEN-9);//从第7个复制
+              memcmp(&vehicle.WayPoint,data+7,dframe.LEN-9);//从第7个复制o
+              waypointlist<<vehicle.WayPoint;//存起来
+
+
          }break;
 
          case 0x0050://Satuts
@@ -179,6 +182,17 @@ void DLink::R_Decode(QByteArray data)
 }
 
 
+
+
+DLink::_vehicle DLink::readvehicle()
+{
+    return vehicle;
+}
+
+void DLink::SendParameter(void)
+{
+
+}
 
 
 

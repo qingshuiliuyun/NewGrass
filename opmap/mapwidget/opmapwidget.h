@@ -413,6 +413,12 @@ public:
      * @return WayPointItem a pointer to the WayPoint created
      */
     WayPointItem *WPCreate(internals::PointLatLng const & coord, int const & altitude);
+
+
+
+
+    WayPointItem *WPCreate(WayPointItem::_waypoint const &coord);
+
     /**
      * @brief Creates a new WayPoint
      *
@@ -557,7 +563,7 @@ signals:
     void WPNeedToUpdata(int number);
 
     void WPChanged(int Number,double Lat,double Lng);
-    void EmitCurrentMousePosition(internals::PointLatLng);
+    void EmitCurrentMousePosition(internals::PointLatLng,int);
 
     void zoomChanged(double zoomt, double zoom, double zoomd);
     /**

@@ -60,6 +60,26 @@ class WayPointItem : public QObject, public QGraphicsItem {
 public:
     enum { Type = UserType + 1 };
     enum wptype { absolute, relative };
+
+    //waypoint struct def
+
+    typedef struct {
+        int id;
+        uint16_t type;//0 point 1 line 2 circle
+        uint16_t action;
+        float  altitude;
+        float  relativeAltitude;
+        double latitude;
+        double longitude;
+        float speed;
+        float course;
+
+        QString description;
+    }_waypoint;
+
+
+
+
     /**
      * @brief Constructer
      *
@@ -69,6 +89,7 @@ public:
      * @return
      */
     WayPointItem(internals::PointLatLng const & coord, int const & altitude, MapGraphicItem *map, wptype type = absolute);
+    WayPointItem(const _waypoint &coord, MapGraphicItem *map, wptype type = absolute);
     WayPointItem(MapGraphicItem *map, bool magicwaypoint);
     /**
      * @brief Constructer
@@ -210,19 +231,7 @@ protected:
 private:
     internals::PointLatLng coord; // coordinates of this WayPoint
 
-    typedef struct {
-        uint16_t id;
-        uint16_t type;//0 point 1 line 2 circle
-        uint16_t action;
-        float  altitude;
-        float  relativeAltitude;
-        double latitude;
-        double longitude;
-        float speed;
-        float course;
 
-        QString description;
-    }_waypoint;
 
 
 

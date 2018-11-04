@@ -240,10 +240,22 @@ void OPMapWidget::mouseMoveEvent(QMouseEvent *event)
 
     p = map->mapFromParent(p);
     currentmouseposition = map->FromLocalToLatLng(p.x(), p.y());
-    emit EmitCurrentMousePosition(currentmouseposition);
+    //emit EmitCurrentMousePosition( currentmouseposition);
 
 
     //qDebug() << currentmouseposition.Lat() << currentmouseposition.Lng();
+
+
+    foreach(QGraphicsItem * i, map->childItems()) {
+        WayPointItem *w = qgraphicsitem_cast<WayPointItem *>(i);
+        if (w) {
+            if (w->isSelected()) {
+                emit EmitCurrentMousePosition(w->Coord(),w->Number());
+                //qDebug() << "emit";
+            }
+        }
+    }
+
 
 
 }
@@ -309,6 +321,21 @@ WayPointItem *OPMapWidget::WPCreate(internals::PointLatLng const & coord, int co
     setOverlayOpacity(overlayOpacity);
     return item;
 }
+
+WayPointItem *OPMapWidget::WPCreate(const WayPointItem::_waypoint &coord)
+{
+    WayPointItem *item = new WayPointItem(coord,map);
+
+    //在这里生成，因此可以在这里加入各种参数
+    ConnectWP(item);
+    item->setParentItem(map);
+    int position = item->Number();
+    emit WPCreated(position, item);
+    setOverlayOpacity(overlayOpacity);
+    return item;
+}
+
+
 WayPointItem *OPMapWidget::WPCreate(internals::PointLatLng const & coord, int const & altitude, QString const & description)
 {
     WayPointItem *item = new WayPointItem(coord, altitude, description, map);

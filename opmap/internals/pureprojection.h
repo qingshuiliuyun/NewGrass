@@ -82,6 +82,7 @@ public:
     PointLatLng translate(PointLatLng p1, double distance, double bearing);
     double courseBetweenLatLng(const PointLatLng &p1, const PointLatLng &p2);
     void offSetFromLatLngs(PointLatLng p1, PointLatLng p2, double &dX, double &dY);
+    void offSetFromLatLngs(double latitude1,double longitude1,double latitude2,double longitude2, double &distance, double &bearing);
 protected:
 
     static const double PI;

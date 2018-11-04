@@ -20,11 +20,21 @@ public:
     void DisplayParameter(DLink::_vehicle vehicle);
 
 
+    DLink::_vehicle vehicle;
 
+
+signals:
+    void SendParameter(void);
+
+private slots:
+    void on_treeWidget_clicked(const QModelIndex &index);
+
+    void on_OK_clicked();
+
+    void on_upload_clicked();
 
 private:
     Ui::Parameter *ui;
-
 
 
 };

@@ -56,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(map,SIGNAL(MouseDoubleClickEvent(QMouseEvent*)),
             this,SLOT(CreateWayPoint(QMouseEvent*)));
 
+    connect(map,SIGNAL(EmitCurrentMousePosition(internals::PointLatLng,int)),
+            this,SLOT(PointPosChange(internals::PointLatLng,int)));
 
 
 
@@ -167,6 +169,7 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
     internals::PointLatLng LatLng;
     LatLng.SetLat(map->currentMousePosition().Lat());
     LatLng.SetLng(map->currentMousePosition().Lng());
+
     ui->statusBar->showMessage(map->currentMousePosition().ToString(),10000);
 
 
@@ -175,7 +178,27 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
         case Qt::LeftButton:{
             if(isCanCreatePoint == 0x01)
             {
-               mapcontrol::WayPointItem *point = map->WPCreate(LatLng,0,"home");
+               mapcontrol::WayPointItem *point = map->WPCreate(LatLng,0);
+
+               Mission::_waypoint p;
+
+
+               p.id = point->Number();
+               p.type = 0;
+               p.action = 0;
+               p.altitude = 0;
+               p.latitude = point->Coord().Lat();
+               p.longitude = point->Coord().Lng();
+               p.speed = 0.5;
+               p.course = 0;
+
+               PointList << p ;//把点保存起来
+
+               if(MissionWgt)
+               {
+                   MissionWgt->addPoints(PointList);//刷新一下
+               }
+
                if(point->Number() >= 1)
                {
                    map->WPLineCreate(map->WPFind(point->Number() -1),point,QColor("#66CD00"));
@@ -184,6 +207,28 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
         }break;
     }
 }
+
+void MainWindow::PointPosChange(internals::PointLatLng p, int number)
+{
+    Mission::_waypoint point;
+    point.id = number;
+    point.type = PointList.at(number).type;
+    point.action = PointList.at(number).action;
+    point.altitude = PointList.at(number).altitude;
+    point.latitude = p.Lat();
+    point.longitude = p.Lng();
+    point.speed = PointList.at(number).speed;
+    point.course = PointList.at(number).course;
+
+
+    PointList.replace(number,point);
+
+    if(MissionWgt)
+    {
+        MissionWgt->addPoints(PointList);//刷新一下
+    }
+}
+
 
 void MainWindow::on_actionSerialPort_triggered()
 {
@@ -234,6 +279,7 @@ void MainWindow::on_actionMission_triggered()
                                  this->width(),
                                  this->height() - ui->menuBar->height()  - ui->statusBar->height());
         MissionWgt->show();
+        MissionWgt->addPoints(PointList);//刷新一下
     }
     else
     {
@@ -379,5 +425,12 @@ void MainWindow::on_actionRule_triggered()
 
 void MainWindow::on_actionClearAllPoint_triggered()
 {
+    PointList.clear();
     map->WPDeleteAll();
+
+    if(MissionWgt)
+    {
+        MissionWgt->addPoints(PointList);//刷新一下
+    }
+
 }

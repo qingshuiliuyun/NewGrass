@@ -83,12 +83,13 @@ public:
 
     typedef struct {
         uint16_t id;
-        float    altitude;
-        double   latitude;
-        double   longitude;
-        float    radius;
-        float    speed;
-        float    course;
+        uint16_t type;//0 point 1 line 2 circle
+        uint16_t action;
+        float altitude;
+        double latitude;
+        double longitude;
+        float speed;
+        float course;
     }_waypoint;
 
     typedef struct {
@@ -165,6 +166,7 @@ public:
 
     void R_Decode(QByteArray data);
 
+    _vehicle readvehicle();
 
 
 
@@ -177,68 +179,9 @@ public:
     QByteArray recievedata;
 
     quint8 CurrentSetting = 0x01;
-//landing gear
-    quint8 CMDMode = 0;
-
-    quint8 CMDFrame[50];
-    quint8 CMDEngine[50];
-
-    quint8 FrameCount = 0;
-
-    quint8 CMD_Landing = 0;
-    quint8 CMD_Umbrella = 0;
-    qint8  CMD_ForeWheelAngle = 0;
-    quint8 CMD_LeftBrakeForce = 0;
-    quint8 CMD_RightBrakeForce = 0;
 
 
-    quint8 Feedback_ForeLanding_up;
-    quint8 Feedback_ForeLanding_down;
-    quint8 Feedback_LeftLanding_up;
-    quint8 Feedback_LeftLanding_down;
-    quint8 Feedback_RightLanding_up;
-    quint8 Feedback_RightLanding_down;
-
-    quint8 Feedback_ForeTouchLand;
-    quint8 Feedback_LeftTouchLand;
-    quint8 Feedback_RightTouchLand;
-
-    quint8 Feedback_OpenUmbrella;
-    quint8 Feedback_CutUmbrella;
-
-    quint16 Feedback_Pressure1;
-    quint16 Feedback_Pressure;
-
-    quint8 Feedback_GearStates;
-    quint8 Feedback_g_gearupFK;
-    quint8 Feedback_isSoft;
-
-//engine
-
-    quint8 Engine_Ordor = 0;
-    quint8 Engine_Count = 0;
-    quint8 Engine_Start_Stop = 0;
-    quint8 Engine_Throttle = 0;
-
-
-    quint8 Feedback_Engine_SS1 = 0;
-    quint8 Feedback_Engine_SS2 = 0;
-    quint8 Feedback_Engine_SS3 = 0;
-    quint8 Feedback_Engine_SS4 = 0;
-
-    quint8 Feedback_Engine_Throttle1 = 0;
-    quint8 Feedback_Engine_Throttle2 = 0;
-    quint8 Feedback_Engine_Throttle3 = 0;
-    quint8 Feedback_Engine_Throttle4 = 0;
-
-
-
-    quint8  CMD_States1,CMD_States2,CMD_States3,CMD_States4;
-    quint8  TurbineStates1,TurbineStates2,TurbineStates3,TurbineStates4;
-    quint32 TurbineRPM1,TurbineRPM2,TurbineRPM3,TurbineRPM4;
-    qint16  TurbineTMP1,TurbineTMP2,TurbineTMP3,TurbineTMP4;
-    quint8  TurbineVoltage1,TurbineVoltage2,TurbineVoltage3,TurbineVoltage4;
-    quint8  TurbineCurrent1,TurbineCurrent2,TurbineCurrent3,TurbineCurrent4;
+    QList<_waypoint> waypointlist;
 
 signals:
 
@@ -246,6 +189,10 @@ signals:
 
 public slots:
     void readPendingDatagrams(void);
+
+    //发送
+    void SendParameter(void);
+
 
 private:
     QSerialPort *serialPort = NULL;

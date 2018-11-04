@@ -238,6 +238,22 @@ void PureProjection::offSetFromLatLngs(PointLatLng p1, PointLatLng p2, double &d
     bearing  = courseBetweenLatLng(p1, p2);
 }
 
+void PureProjection::offSetFromLatLngs(double latitude1,double longitude1,double latitude2,double longitude2, double &distance, double &bearing)
+{
+    PointLatLng p1,p2;
+
+    p1.SetLat(latitude1);
+    p1.SetLng(longitude1);
+
+    p2.SetLat(latitude2);
+    p2.SetLng(longitude2);
+
+
+    distance = DistanceBetweenLatLng(p1, p2) * 1000;
+    bearing  = courseBetweenLatLng(p1, p2);
+}
+
+
 double PureProjection::myfmod(double x, double y)
 {
     return x - y * floor(x / y);

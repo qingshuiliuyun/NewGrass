@@ -39,7 +39,7 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event);
 private slots:
     void CreateWayPoint(QMouseEvent *event);
-
+    void PointPosChange(internals::PointLatLng p,int number);
 
 
     void on_actionSerialPort_triggered();
@@ -63,7 +63,7 @@ private:
     Mission   *MissionWgt = Q_NULLPTR;
     Parameter *ParameterWgt = Q_NULLPTR;
 
-
+    QList<Mission::_waypoint> PointList;
 
 
     uint8_t isCanCreatePoint = 0;
