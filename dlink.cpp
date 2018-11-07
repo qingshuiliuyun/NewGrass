@@ -1,5 +1,6 @@
 #include "dlink.h"
 #include "QDebug"
+//#include "QMessageBox"
 
 /* Frame typedef
  * |EB 90|CIDL CIDH|SYN|LENL LENH|Payload|CKL CKH|
@@ -17,6 +18,12 @@ DLink::DLink(QObject *parent) : QObject(parent)
 {
     Fstart[0] = 0xeb;
     Fstart[1] = 0x90;
+
+
+    WayPointTimer = new QTimer();
+    connect(WayPointTimer,SIGNAL(timeout()),
+            this,SLOT(WayPointTimeOut()));
+
 }
 
 DLink::~DLink()
@@ -102,6 +109,9 @@ void DLink::readPendingDatagrams(void)
         SerialData.clear();
     }
     QByteArray datagram = serialPort->readAll();
+
+    //qDebug() << datagram;
+
     SerialData.append(datagram);
     while(SerialData.contains(Fstart))
     {
@@ -114,7 +124,7 @@ void DLink::readPendingDatagrams(void)
         //寻找CID，SYN，LEN等信息
         dframe.CID = SerialData[2] + ((uint16_t)SerialData[3]<<8);
         dframe.SYN = SerialData[4];
-        dframe.LEN = SerialData[5] + ((uint16_t)SerialData[6]<<8) + 9;//数据长度加9等于帧长
+        dframe.LEN = (SerialData[5] + ((uint16_t)SerialData[6]<<8)) + 9;//数据长度加9等于帧长
 
         /*qDebug() << dframe.CID
                  << dframe.SYN
@@ -123,10 +133,22 @@ void DLink::readPendingDatagrams(void)
         if(SerialData.size() >= dframe.LEN)//如果当前数据长度大于或等于一帧，那么认为可以解码
         {
                 QByteArray AFrame = SerialData.left(dframe.LEN);
-                SerialData = SerialData.mid(dframe.LEN);
+                SerialData = SerialData.mid(SerialData.indexOf(Fstart) + 2);//去除头部
 
-                dframe.SCK = SerialData[dframe.LEN - 2] + ((uint16_t)SerialData[dframe.LEN - 1]<<8);//校验
+                dframe.SCK = (uint8_t)AFrame[dframe.LEN - 2] + ((uint16_t)AFrame[dframe.LEN - 1]<<8);//校验
                 //如果通过校验，那么把数据给解码函数进行解码
+
+                /*
+                qDebug() << dframe.SCK
+                         << (uint8_t)AFrame[dframe.LEN - 2]
+                         << (uint8_t)AFrame[dframe.LEN - 1]
+                         << dframe.CID
+                         << dframe.SYN
+                         << dframe.LEN
+                         << CRC_CheckSum((uint8_t *)AFrame.data(),dframe.LEN-2);
+                         */
+
+
                 if(dframe.SCK == CRC_CheckSum((uint8_t *)AFrame.data(),dframe.LEN-2))
                 {
                     R_Decode(AFrame);
@@ -148,35 +170,98 @@ void DLink::R_Decode(QByteArray data)
      {
          case 0x0000://heartbeat
          {
-              memcmp(&vehicle.HeardBeat,data+7,dframe.LEN-9);//从第7个复制
+              data = data.mid(7);
+              memcpy(&vehicle.HeardBeat,data,sizeof(vehicle.HeardBeat));//从第7个复制
+         }break;
+
+         case 0x0004://ECHO
+         {
+              qDebug() << "echo";
+              uint32_t ID = 0,Value = 0;
+              union{uint8_t B[4];uint32_t W;}src;
+
+              src.B[0] = data[7];
+              src.B[1] = data[8];
+              src.B[2] = data[9];
+              src.B[3] = data[10];
+              ID = src.W;
+
+              src.B[0] = data[11];
+              src.B[1] = data[12];
+              src.B[2] = data[13];
+              src.B[3] = data[14];
+              Value = src.W;
+              qDebug() << ID << Value;
+              switch(ID)
+              {
+                  case 0x0040://命令回复
+                  {
+                       if(Value == 0x07)//航点收到回复
+                       {
+                           isSendWayPointCompelet = true;
+
+                           qDebug() << ID << Value << isSendWayPointCompelet;
+
+                       }
+                       else if(Value == 0x08)//航点发送结束
+                       {
+                           //isSendWayPointCompelet = true;
+                           isGetNextWayPoint = false;
+                           qDebug() << ID << Value;
+
+                       }
+                  }break;
+              }
+
+
+         }break;
+
+         case 0x0005://CMD
+         {
+              data = data.mid(7);
+              memcpy(&vehicle.CMD,data,sizeof(vehicle.CMD));//从第7个复制
          }break;
 
          case 0x0010://parameter
          {
-              memcmp(&vehicle.Parameter,data+7,dframe.LEN-9);//从第7个复制
+              data = data.mid(7);
+              memcpy(&vehicle.Parameter,data,sizeof(vehicle.Parameter));
+              emit flushParameter();
+              //qDebug() << "parameter recieve" << data.data()+7 <<data;
          }break;
 
          case 0x0020://gps
          {
-              memcmp(&vehicle.GPS,data+7,dframe.LEN-9);//从第7个复制
+              data = data.mid(7);
+              memcpy(&vehicle.GPS,data,dframe.LEN-9);//从第7个复制
          }break;
 
          case 0x0030://Ultrasonic
          {
-              memcmp(&vehicle.Ultrasonic,data+7,dframe.LEN-9);//从第7个复制
+              data = data.mid(7);
+              memcpy(&vehicle.Ultrasonic,data,dframe.LEN-9);//从第7个复制
          }break;
 
          case 0x0040://WayPoint
          {
-              memcmp(&vehicle.WayPoint,data+7,dframe.LEN-9);//从第7个复制o
+              data = data.mid(7);
+              memcpy(&vehicle.WayPoint,data,dframe.LEN-9);//从第7个复制o
               waypointlist<<vehicle.WayPoint;//存起来
+              qDebug() << "waypoint" << vehicle.WayPoint.id;
 
+
+              if(isGetNextWayPoint == true)
+              {
+                  qDebug() << "getnext" << isGetNextWayPoint;
+                  SendCMD(0x40,0x07);
+              }
 
          }break;
 
          case 0x0050://Satuts
          {
-              memcmp(&vehicle.Satuts,data+7,dframe.LEN-9);//从第7个复制
+              data = data.mid(7);
+              memcpy(&vehicle.Satuts,data,dframe.LEN-9);//从第7个复制
          }break;
      }
 }
@@ -189,10 +274,191 @@ DLink::_vehicle DLink::readvehicle()
     return vehicle;
 }
 
+
+//|EB 90|CIDL CIDH|SYN|LENL LENH|Payload|CKL CKH|
+
+
+
+void DLink::SendCMD(uint32_t ID,uint32_t Value)
+{
+    union{uint8_t B[4];uint16_t D[2];uint32_t W;}src;
+    char  DataToSend[100];
+    uint16_t DataCount = 0;
+
+    DataToSend[DataCount++] = 0xEB;
+    DataToSend[DataCount++] = 0x90;
+
+    src.D[0] = 0x0005;
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+
+    DataToSend[DataCount++] = vehicle.U2.txsyn++;
+
+    src.D[0] = 8;
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    src.W = ID;
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+    DataToSend[DataCount++] = src.B[2];
+    DataToSend[DataCount++] = src.B[3];
+
+    src.W = Value;
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+    DataToSend[DataCount++] = src.B[2];
+    DataToSend[DataCount++] = src.B[3];
+
+    src.D[0] = CRC_CheckSum((uint8_t *)DataToSend,DataCount);
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    if(serialPort)
+    {
+       serialPort->write(DataToSend,DataCount);
+    }
+    else
+    {
+        qInfo() << "Please Open SerialPort first";
+    }
+}
+
 void DLink::SendParameter(void)
 {
+    union{uint8_t B[2];uint16_t D;}src;
+    char  DataToSend[100];
+    uint16_t DataCount = 0;
+
+    DataToSend[DataCount++] = 0xEB;
+    DataToSend[DataCount++] = 0x90;
+
+    src.D = 0x0010;
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+
+    DataToSend[DataCount++] = vehicle.U2.txsyn++;
+
+    src.D = sizeof(vehicle.Parameter);
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    memcpy(DataToSend + DataCount,&vehicle.Parameter,sizeof(vehicle.Parameter));
+    DataCount += sizeof(vehicle.Parameter);
+
+
+    src.D = CRC_CheckSum((uint8_t *)DataToSend,DataCount);
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    if(serialPort)
+    {
+       serialPort->write(DataToSend,DataCount);
+    }
+    else
+    {
+        qInfo() << "Please Open SerialPort first";
+    }
+
+    //qDebug() << (uint8_t)DataCount << "send";
 
 }
+
+void DLink::SendWayPoint(void)
+{
+    union{uint8_t B[2];uint16_t D;}src;
+    char  DataToSend[100];
+    uint16_t DataCount = 0;
+
+    DataToSend[DataCount++] = 0xEB;
+    DataToSend[DataCount++] = 0x90;
+
+    src.D = 0x0040;
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    DataToSend[DataCount++] = vehicle.U2.txsyn++;
+
+    src.D = sizeof(vehicle.WayPoint);
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    memcpy(DataToSend + DataCount,&vehicle.WayPoint,sizeof(vehicle.WayPoint));
+    DataCount += sizeof(vehicle.WayPoint);
+
+    src.D = CRC_CheckSum((uint8_t *)DataToSend,DataCount);
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    if(serialPort)
+    {
+       serialPort->write(DataToSend,DataCount);
+    }
+    else
+    {
+        qInfo() << "Please Open SerialPort first";
+    }
+}
+
+
+void DLink::SendWayPointThread(void)
+{
+    WayPointTimer->start(100);//100ms一个航点
+
+    //初始化第一个航点以及发送标志
+    SendWayPointCount = 0;
+    vehicle.WayPoint = waypointlist.at(SendWayPointCount);
+
+
+}
+
+void DLink::WayPointTimeOut(void)
+{
+    if(isSendWayPointCompelet)//如果发送成功，那发送下一个航点
+    {
+        isSendWayPointCompelet = false;
+        SendWayPointCount ++;//下一个航点
+        if(SendWayPointCount < waypointlist.size())
+        {
+            vehicle.WayPoint = waypointlist.at(SendWayPointCount);
+
+            emit SendingWayPoint(waypointlist.size(),SendWayPointCount);
+            SendWayPoint();//发送一个航点
+
+        }
+        else
+        {
+            //如果发送完成，向设备发送停止发送航点命令
+
+            SendCMD(0,0x08);
+            SendWayPointCount = 0;
+            WayPointTimer->stop();
+        }
+    }
+    else//未发送成功，那么继续发送当前航点
+    {
+        emit SendingWayPoint(waypointlist.size(),SendWayPointCount);
+        SendWayPoint();//发送一个航点
+    }
+
+
+}
+
+void DLink::WayPointClear()
+{
+    waypointlist.clear();
+}
+
+void DLink::WayPointAppend(Mission::_waypoint point)
+{
+    waypointlist.append(point);
+}
+
+
+
+
 
 
 

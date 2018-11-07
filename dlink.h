@@ -8,6 +8,9 @@
 #include <QSerialPortInfo>
 #include "QFile"
 #include "QDateTime"
+#include "QTimer"
+
+#include "Mission/mission.h"
 
 
 #define TXBUFFSIZE 1000
@@ -81,7 +84,7 @@ public:
         float right;
     }_ultrasonic;
 
-    typedef struct {
+/*    typedef struct {
         uint16_t id;
         uint16_t type;//0 point 1 line 2 circle
         uint16_t action;
@@ -91,13 +94,21 @@ public:
         float speed;
         float course;
     }_waypoint;
+    */
 
     typedef struct {
         uint16_t currentwaypoint;
     }_status;
 
 
+    typedef struct {
 
+        bool ReadParameter;
+        bool StartMission;
+        bool StopMission;
+        bool BackHome;
+
+    }_cmd;
 
 
 
@@ -141,8 +152,10 @@ public:
         _parameter Parameter;
         _gps GPS;
         _ultrasonic Ultrasonic;
-        _waypoint WayPoint;
+        Mission::_waypoint WayPoint;
         _status Satuts;
+        _cmd CMD;
+
 
         _uart U1;
         _uart U2;
@@ -168,9 +181,10 @@ public:
 
     _vehicle readvehicle();
 
+    void SendCMD(uint32_t ID, uint32_t Value);
 
-
-
+    void WayPointClear();
+    void WayPointAppend(Mission::_waypoint point);
 
 
     _vehicle vehicle;
@@ -181,27 +195,40 @@ public:
     quint8 CurrentSetting = 0x01;
 
 
-    QList<_waypoint> waypointlist;
+    QList<Mission::_waypoint> waypointlist;
 
 signals:
 
+   void flushParameter(void);
 
+   void SendingWayPoint(int total,int current);
 
 public slots:
     void readPendingDatagrams(void);
 
     //发送
+
     void SendParameter(void);
 
 
+    void WayPointTimeOut(void);
+
+    void SendWayPoint(void);
+
+    void SendWayPointThread(void);
+
 private:
-    QSerialPort *serialPort = NULL;
+    QSerialPort *serialPort = nullptr;
 
-    QFile *FCCLogFile = NULL;
-    QFile *InfoLogFile = NULL;
+    QFile *FCCLogFile = nullptr;
+    QFile *InfoLogFile = nullptr;
+
+    QTimer *WayPointTimer = nullptr;
 
 
-
+    int SendWayPointCount = 0;
+    bool isSendWayPointCompelet = false;
+    bool isGetNextWayPoint = true;
 
 };
 

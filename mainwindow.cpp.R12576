@@ -352,7 +352,7 @@ void MainWindow::on_actionMission_triggered()
         MissionWgt->addPoints(PointList);//刷新一下
 
 
-        connect(MissionWgt,SIGNAL(uploadPoints(QList<Mission::_waypoint>)),
+        connect(MissionWgt,SIGNAL(uploadPoints(QList<_waypoint>)),
                 this,SLOT(SendWayPoint(QList<Mission::_waypoint>)));
 
     }
@@ -529,7 +529,7 @@ void MainWindow::ChangeParameter()
     if(ParameterWgt)
     {
         dlink->vehicle.Parameter = ParameterWgt->vehicle.Parameter;
-        /*qDebug() << dlink->vehicle.Parameter.speed_Kp << endl
+        qDebug() << dlink->vehicle.Parameter.speed_Kp << endl
                  << dlink->vehicle.Parameter.speed_Ki << endl
                  << dlink->vehicle.Parameter.speed_Kd << endl
                  << dlink->vehicle.Parameter.distance_Kp << endl
@@ -538,7 +538,6 @@ void MainWindow::ChangeParameter()
                  << dlink->vehicle.Parameter.heading_Kp<< endl
                  << dlink->vehicle.Parameter.heading_Ki << endl
                  << dlink->vehicle.Parameter.heading_Kd << "endl";
-                 */
     }
 }
 
@@ -584,15 +583,8 @@ void MainWindow::BackHome_Clicked(bool)
 
 void MainWindow::SendWayPoint(QList<Mission::_waypoint> list)
 {
-
-     dlink->WayPointClear();
-
-     foreach(Mission::_waypoint item,PointList)
-     {
-         dlink->WayPointAppend(item);
-     }
-
-
+     //dlink->waypointlist.clear();
+     dlink->waypointlist = PointList;
      dlink->SendWayPointThread();
 }
 

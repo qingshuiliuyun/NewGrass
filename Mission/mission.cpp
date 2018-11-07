@@ -86,7 +86,7 @@ void Mission::on_treeWidget_itemSelectionChanged()
 
     QTreeWidgetItem *item = ui->treeWidget->currentItem();
 
-    qDebug() << item;
+    //qDebug() << item;
     if(item != NULL)
     {
         ui->comboBox_type->clear();
@@ -164,5 +164,6 @@ void Mission::on_pushButton_clearall_clicked()
     ui->treeWidget->clear();
 
     WayPoint.clear();
+    emit clearallPoints();
     emit changePoints(WayPoint);
 }

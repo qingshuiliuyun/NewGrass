@@ -9,7 +9,7 @@
 #include "QFile"
 #include "opmap/mapwidget/opmapwidget.h"
 #include "opmap/mapwidget/waypointitem.h"
-
+#include "QPushButton"
 
 #include "QTimer"
 
@@ -37,9 +37,26 @@ protected:
     void mousePressEvent(QMouseEvent *event);
 
     void mouseDoubleClickEvent(QMouseEvent *event);
+
+
+signals:
+
+
+
 private slots:
     void CreateWayPoint(QMouseEvent *event);
     void PointPosChange(internals::PointLatLng p,int number);
+    void ChangeParameter(void);
+    void ParameterFlush(void);
+    void SendWayPoint(QList<Mission::_waypoint> list);
+
+    void SendCMD(uint32_t ID,uint32_t Value);
+
+    void StartMission_Clicked(bool);
+
+    void StopMission_Clicked(bool);
+
+    void BackHome_Clicked(bool);
 
 
     void on_actionSerialPort_triggered();
@@ -71,7 +88,9 @@ private:
 
 
 
-
+    QPushButton *StartButton = Q_NULLPTR;
+    QPushButton *StopButton = Q_NULLPTR;
+    QPushButton *BackButton = Q_NULLPTR;
 
 };
 

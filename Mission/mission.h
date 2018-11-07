@@ -42,8 +42,9 @@ public slots:
 
 
 signals:
+    void clearallPoints();
     void changePoints(QList<_waypoint> p);
-    void uploadPoints(QList<_waypoint> p);
+    void uploadPoints(QList<Mission::_waypoint> p);
     void downloadPoints(QList<_waypoint> p);
 
 private slots:
