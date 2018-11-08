@@ -191,7 +191,7 @@ void DLink::R_Decode(QByteArray data)
               src.B[2] = data[13];
               src.B[3] = data[14];
               Value = src.W;
-              qDebug() << ID << Value;
+              //qDebug() << ID << Value;
               switch(ID)
               {
                   case 0x0040://命令回复
@@ -247,8 +247,10 @@ void DLink::R_Decode(QByteArray data)
               data = data.mid(7);
               memcpy(&vehicle.WayPoint,data,dframe.LEN-9);//从第7个复制o
               waypointlist<<vehicle.WayPoint;//存起来
-              qDebug() << "waypoint" << vehicle.WayPoint.id;
+              emit recievePoint(vehicle.WayPoint);
+              //emit flushWayPoint();
 
+              qDebug() << "waypoint" << vehicle.WayPoint.id;
 
               if(isGetNextWayPoint == true)
               {

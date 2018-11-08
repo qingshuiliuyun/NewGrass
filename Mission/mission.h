@@ -5,6 +5,11 @@
 #include "QTreeWidget"
 #include "QTreeView"
 #include "QTreeWidgetItem"
+#include "QFile"
+#include "QDir"
+#include "QDateTime"
+#include "QFileDialog"
+#include "QStringList"
 
 namespace Ui {
 class Mission;
@@ -33,19 +38,26 @@ public:
     void addPoints(QList<_waypoint> p);
 
 
+        QList <_waypoint> WayPoint;
 
-protected:
     void reflushTree(void);
 
+    void SavePoint(void);
+    void readPoint(void);
 
 public slots:
 
 
 signals:
+
+    void clearInside();
+
     void clearallPoints();
     void changePoints(QList<_waypoint> p);
     void uploadPoints(QList<Mission::_waypoint> p);
     void downloadPoints(QList<_waypoint> p);
+
+    void readFileToPoint(Mission::_waypoint);
 
 private slots:
     void on_treeWidget_itemSelectionChanged();
@@ -61,12 +73,18 @@ private slots:
 
     void on_pushButton_clearall_clicked();
 
+    void on_pushButton_SaveToFile_clicked();
+
+    void on_pushButton_LoadFromFile_clicked();
+
+    void on_pushButton_clearInside_clicked();
+
 private:
     Ui::Mission *ui;
 
 
 
-    QList <_waypoint> WayPoint;
+
 
 
 };

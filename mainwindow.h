@@ -50,6 +50,12 @@ private slots:
     void ParameterFlush(void);
     void SendWayPoint(QList<Mission::_waypoint> list);
 
+    void flushWayPoint(void);
+    void RecievePoint(Mission::_waypoint p);
+
+
+
+
     void SendCMD(uint32_t ID,uint32_t Value);
 
     void StartMission_Clicked(bool);
@@ -57,6 +63,10 @@ private slots:
     void StopMission_Clicked(bool);
 
     void BackHome_Clicked(bool);
+
+    void ClearInsidePoint(void);
+
+
 
 
     void on_actionSerialPort_triggered();
@@ -72,6 +82,10 @@ private slots:
     void on_actionRule_triggered();
 
     void on_actionClearAllPoint_triggered();
+
+    void on_actionDownLoadWayPoint_triggered();
+
+    void on_actionUploadWayPoint_triggered();
 
 private:
     Ui::MainWindow *ui = Q_NULLPTR;

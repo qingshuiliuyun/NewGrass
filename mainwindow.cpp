@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle(tr("NewGrass"));
     setWindowIcon(QIcon(":/img/Remote.png"));
 
+
+
     //先安装调试输出句柄
     //qInstallMessageHandler(myMessageOutput);
 
@@ -99,9 +101,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dlink,SIGNAL(flushParameter()),
             this,SLOT(ParameterFlush()));
 
+    connect(dlink,SIGNAL(flushWayPoint()),
+            this,SLOT(flushWayPoint()));
 
-
-
+    connect(dlink,SIGNAL(recievePoint(Mission::_waypoint)),
+            this,SLOT(RecievePoint(Mission::_waypoint)));
 
 
 }
@@ -210,6 +214,9 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
     ui->statusBar->showMessage(map->currentMousePosition().ToString(),10000);
 
 
+    qDebug() << QString::number(LatLng.Lat(),'f',8)
+             << QString::number(LatLng.Lng(),'f',8);
+
     switch(event->buttons())
     {
         case Qt::LeftButton:{
@@ -248,6 +255,33 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
         }break;
     }
 }
+
+void MainWindow::RecievePoint(Mission::_waypoint p)
+{
+       internals::PointLatLng LatLng;
+       LatLng.SetLat(p.latitude);
+       LatLng.SetLng(p.longitude);
+
+       mapcontrol::WayPointItem *point = map->WPCreate(LatLng,p.altitude);
+
+       point->SetNumber(p.id);
+
+       //PointList.replace(p.id,p);
+
+       PointList << p ;//把点保存起来
+
+       if(MissionWgt)
+       {
+           MissionWgt->addPoints(PointList);//刷新一下
+       }
+
+       if(point->Number() >= 1)
+       {
+           map->WPLineCreate(map->WPFind(point->Number() -1),point,QColor("#66CD00"));
+       }
+}
+
+
 
 void MainWindow::PointPosChange(internals::PointLatLng p, int number)
 {
@@ -354,6 +388,20 @@ void MainWindow::on_actionMission_triggered()
 
         connect(MissionWgt,SIGNAL(uploadPoints(QList<Mission::_waypoint>)),
                 this,SLOT(SendWayPoint(QList<Mission::_waypoint>)));
+
+        connect(MissionWgt,SIGNAL(downloadPoints(QList<_waypoint>)),
+                this,SLOT(on_actionDownLoadWayPoint_triggered()));
+
+        connect(MissionWgt,SIGNAL(readFileToPoint(Mission::_waypoint)),
+                this,SLOT(RecievePoint(Mission::_waypoint)));
+
+        connect(MissionWgt,SIGNAL(clearallPoints()),
+                this,SLOT(on_actionClearAllPoint_triggered()));
+
+        connect(MissionWgt,SIGNAL(clearInside()),
+                this,SLOT(ClearInsidePoint()));
+
+
 
     }
     else
@@ -561,6 +609,17 @@ void MainWindow::ParameterFlush()
     }
 }
 
+void MainWindow::flushWayPoint()
+{
+    if(MissionWgt)
+    {
+        MissionWgt->WayPoint = dlink->waypointlist;
+        MissionWgt->reflushTree();
+    }
+}
+
+
+
 
 void MainWindow::SendCMD(uint32_t ID, uint32_t Value)
 {
@@ -582,6 +641,13 @@ void MainWindow::BackHome_Clicked(bool)
      dlink->SendCMD(0x06,0x07);
 }
 
+void MainWindow::ClearInsidePoint(void)
+{
+    dlink->SendCMD(0x40,0x09);//擦除内部航线
+}
+
+
+
 void MainWindow::SendWayPoint(QList<Mission::_waypoint> list)
 {
 
@@ -596,3 +662,16 @@ void MainWindow::SendWayPoint(QList<Mission::_waypoint> list)
      dlink->SendWayPointThread();
 }
 
+
+void MainWindow::on_actionDownLoadWayPoint_triggered()
+{
+    PointList.clear();//清除航线
+    dlink->WayPointClear();
+    dlink->isGetNextWayPoint = true;
+    dlink->SendCMD(0x40,0x07);//读取航点
+}
+
+void MainWindow::on_actionUploadWayPoint_triggered()
+{
+    SendWayPoint(PointList);
+}

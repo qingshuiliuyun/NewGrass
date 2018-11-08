@@ -167,3 +167,115 @@ void Mission::on_pushButton_clearall_clicked()
     emit clearallPoints();
     emit changePoints(WayPoint);
 }
+
+void Mission::SavePoint(void)
+{
+    QDir *temp = new QDir;
+    if(!temp->exists("./WayPoint"))
+       temp->mkdir("./WayPoint");//如果文件夹不存在就新建
+
+
+    if(WayPoint.size()>0)//有数
+    {
+        QDateTime time = QDateTime::currentDateTime();
+        QString Path = "./WayPoint/WP";
+        Path.append(time.toString("yyyyMMddHHmmss"));
+
+        QString FileName = QFileDialog::getSaveFileName(this,tr("保存航线"),Path,"csv(*.csv)");
+        if(!FileName.isNull())
+        {
+            QFile file(FileName);
+            if(!file.open(QIODevice::WriteOnly | QIODevice::Append))
+            {
+                return;
+            }
+            QString data = "";
+            QTextStream writefiletext(&file);
+            foreach(Mission::_waypoint item,WayPoint)
+            {
+                data.append(QString::number(item.id));       data.append(",");
+                data.append(QString::number(item.type));     data.append(",");
+                data.append(QString::number(item.action));   data.append(",");
+                data.append(QString::number(item.altitude)); data.append(",");
+                data.append(QString::number(item.latitude,'f',8)); data.append(",");
+                data.append(QString::number(item.longitude,'f',8));data.append(",");
+                data.append(QString::number(item.speed));    data.append(",");
+                data.append(QString::number(item.course));   data.append("\n");
+
+            }
+            writefiletext << data;
+            file.close();
+        }
+    }
+}
+
+void Mission::readPoint(void)
+{
+    QDir *temp = new QDir;
+    if(!temp->exists("./WayPoint"))
+    temp->mkdir("./WayPoint");//如果文件夹不存在就新建
+
+    QString FileName = QFileDialog::getOpenFileName(this,tr("读取航线"),"./WayPoint/","csv(*.csv)");
+    if(!FileName.isNull())
+    {
+        QFile file(FileName);
+        if(!file.open(QIODevice::ReadOnly))
+        {
+            return;
+        }
+
+        WayPoint.clear();//清空所有航点
+
+        QTextStream * out = new QTextStream(&file);//文本流
+        QStringList tempOption = out->readAll().split("\n");//每行以\n区分
+        qDebug() << tempOption;
+        _waypoint p;
+
+        foreach(QString item,tempOption)
+        {
+             if(item.size() > 0)
+             {
+                 QStringList cell =  item.split(",");
+                 QString id           = cell.at(0);
+                 QString type         = cell.at(1);
+                 QString action       = cell.at(2);
+                 QString altitude     = cell.at(3);
+                 QString latitude     = cell.at(4);
+                 QString longitude    = cell.at(5);
+                 QString speed        = cell.at(6);
+                 QString course       = cell.at(7);
+
+                 p.id        = id.toInt();
+                 p.type      = type.toInt();
+                 p.action    = action.toInt();
+                 p.altitude  = altitude.toFloat();
+                 p.latitude  = latitude.toDouble();
+                 p.longitude = longitude.toDouble();
+                 p.speed     = speed.toFloat();
+                 p.course    = course.toFloat();
+
+                 WayPoint << p;
+
+                 reflushTree();//刷新一下
+                 emit readFileToPoint(p);
+
+             }
+        }
+        file.close();
+    }
+}
+
+void Mission::on_pushButton_SaveToFile_clicked()
+{
+    SavePoint();
+}
+
+void Mission::on_pushButton_LoadFromFile_clicked()
+{
+    readPoint();
+}
+
+void Mission::on_pushButton_clearInside_clicked()
+{
+    emit clearInside();
+}

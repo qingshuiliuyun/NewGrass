@@ -197,11 +197,19 @@ public:
 
     QList<Mission::_waypoint> waypointlist;
 
+    bool isSendWayPointCompelet = false;
+    bool isGetNextWayPoint = true;
+
+
 signals:
 
    void flushParameter(void);
 
    void SendingWayPoint(int total,int current);
+
+   void flushWayPoint(void);
+
+   void recievePoint(Mission::_waypoint P);
 
 public slots:
     void readPendingDatagrams(void);
@@ -227,8 +235,7 @@ private:
 
 
     int SendWayPointCount = 0;
-    bool isSendWayPointCompelet = false;
-    bool isGetNextWayPoint = true;
+
 
 };
 
