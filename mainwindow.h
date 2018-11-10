@@ -10,7 +10,7 @@
 #include "opmap/mapwidget/opmapwidget.h"
 #include "opmap/mapwidget/waypointitem.h"
 #include "QPushButton"
-
+#include "DlinkInspector/dlinkinspector.h"
 #include "QTimer"
 
 #include "Mission/mission.h"
@@ -53,6 +53,7 @@ private slots:
     void flushWayPoint(void);
     void RecievePoint(Mission::_waypoint p);
 
+    void updateInspector(void);
 
 
 
@@ -87,12 +88,18 @@ private slots:
 
     void on_actionUploadWayPoint_triggered();
 
+    void on_actionInspector_triggered();
+
 private:
     Ui::MainWindow *ui = Q_NULLPTR;
     DLink *dlink = Q_NULLPTR;
+    dlinkinspector *inspector = Q_NULLPTR;
     mapcontrol::OPMapWidget *map = Q_NULLPTR;
     Mission   *MissionWgt = Q_NULLPTR;
     Parameter *ParameterWgt = Q_NULLPTR;
+
+
+
 
     QList<Mission::_waypoint> PointList;
 

@@ -211,6 +211,9 @@ signals:
 
    void recievePoint(Mission::_waypoint P);
 
+   void dlinkUpdate(void);
+
+
 public slots:
     void readPendingDatagrams(void);
 

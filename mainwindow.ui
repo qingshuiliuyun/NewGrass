@@ -70,6 +70,11 @@
     <string>ClearAllPoint</string>
    </property>
   </action>
+  <action name="actionInspector">
+   <property name="text">
+    <string>Inspector</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

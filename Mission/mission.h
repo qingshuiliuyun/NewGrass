@@ -45,8 +45,10 @@ public:
     void SavePoint(void);
     void readPoint(void);
 
-public slots:
 
+
+public slots:
+    void HeaderDoubleClicked(QModelIndex Index);
 
 signals:
 
@@ -83,7 +85,7 @@ private:
     Ui::Mission *ui;
 
 
-
+    bool isDoubleClicked = false;
 
 
 

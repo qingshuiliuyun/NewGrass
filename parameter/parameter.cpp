@@ -163,26 +163,29 @@ void Parameter::on_OK_clicked()
 {
    QTreeWidgetItem *item =  ui->treeWidget->currentItem();
 
-   item->setData(1,0,ui->lineEdit->text());
+   if(item != NULL)
+   {
+       item->setData(1,0,ui->lineEdit->text());
 
-   QString str = item->data(0,Qt::DisplayRole).toString();
+       QString str = item->data(0,Qt::DisplayRole).toString();
 
-   //应该使用JSON模式
-   if(str == "speed_Kp")  vehicle.Parameter.speed_Kp = item->data(1,Qt::DisplayRole).toFloat();
-   else if(str == "speed_Ki")  vehicle.Parameter.speed_Ki = item->data(1,Qt::DisplayRole).toFloat();
-   else if(str == "speed_Kd")  vehicle.Parameter.speed_Kd = item->data(1,Qt::DisplayRole).toFloat();
-   else if(str == "distance_Kp")  vehicle.Parameter.distance_Kp = item->data(1,Qt::DisplayRole).toFloat();
-   else if(str == "distance_Ki")  vehicle.Parameter.distance_Ki = item->data(1,Qt::DisplayRole).toFloat();
-   else if(str == "distance_Kd")  vehicle.Parameter.distance_Kd = item->data(1,Qt::DisplayRole).toFloat();
-   else if(str == "heading_Kp")  vehicle.Parameter.heading_Kp = item->data(1,Qt::DisplayRole).toFloat();
-   else if(str == "heading_Ki")  vehicle.Parameter.heading_Ki = item->data(1,Qt::DisplayRole).toFloat();
-   else if(str == "heading_Kd")  vehicle.Parameter.heading_Kd = item->data(1,Qt::DisplayRole).toFloat();
+       //应该使用JSON模式
+       if(str == "speed_Kp")  vehicle.Parameter.speed_Kp = item->data(1,Qt::DisplayRole).toFloat();
+       else if(str == "speed_Ki")  vehicle.Parameter.speed_Ki = item->data(1,Qt::DisplayRole).toFloat();
+       else if(str == "speed_Kd")  vehicle.Parameter.speed_Kd = item->data(1,Qt::DisplayRole).toFloat();
+       else if(str == "distance_Kp")  vehicle.Parameter.distance_Kp = item->data(1,Qt::DisplayRole).toFloat();
+       else if(str == "distance_Ki")  vehicle.Parameter.distance_Ki = item->data(1,Qt::DisplayRole).toFloat();
+       else if(str == "distance_Kd")  vehicle.Parameter.distance_Kd = item->data(1,Qt::DisplayRole).toFloat();
+       else if(str == "heading_Kp")  vehicle.Parameter.heading_Kp = item->data(1,Qt::DisplayRole).toFloat();
+       else if(str == "heading_Ki")  vehicle.Parameter.heading_Ki = item->data(1,Qt::DisplayRole).toFloat();
+       else if(str == "heading_Kd")  vehicle.Parameter.heading_Kd = item->data(1,Qt::DisplayRole).toFloat();
 
-  /* qDebug() << item->data(0,Qt::DisplayRole)
-            << item->data(1,Qt::DisplayRole);
-            */
+      /* qDebug() << item->data(0,Qt::DisplayRole)
+                << item->data(1,Qt::DisplayRole);
+                */
 
-   emit ChangeParameter();
+       emit ChangeParameter();
+   }
 
 }
 

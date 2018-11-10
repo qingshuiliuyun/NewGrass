@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //以下是UI
     ui->menuBar->addAction(ui->actionSerialPort);
+    ui->menuBar->addAction(ui->actionInspector);
     ui->menuBar->addAction(ui->actionMission);
     ui->menuBar->addAction(ui->actionParameter);
     ui->menuBar->addAction(ui->actionMap);
@@ -151,6 +152,18 @@ void MainWindow::resizeEvent(QResizeEvent *event)
                          this->width(),
                          this->height() - ui->menuBar->height()  - ui->statusBar->height());
     }
+
+    if(inspector)
+    {
+            if(inspector->width() > 0)
+            {
+                inspector->setGeometry(0,
+                                 ui->menuBar->height(),
+                                 this->width(),
+                                 this->height() - ui->menuBar->height()  - ui->statusBar->height());
+            }
+    }
+
 
 
     if(MissionWgt)
@@ -305,6 +318,63 @@ void MainWindow::PointPosChange(internals::PointLatLng p, int number)
 }
 
 
+void MainWindow::on_actionInspector_triggered()
+{
+    if(!inspector)//监视器
+    {
+        inspector = new dlinkinspector(this);
+        inspector->setWindowTitle(tr("Mission"));
+        inspector->setWindowIcon(QIcon(":/img/FF.ico"));
+        inspector->setGeometry(0,
+                                 ui->menuBar->height(),
+                                 this->width(),
+                                 this->height() - ui->menuBar->height()  - ui->statusBar->height());
+        inspector->show();
+
+
+        connect(dlink,SIGNAL(dlinkUpdate()),
+                this,SLOT(updateInspector()));
+
+
+        updateInspector();
+
+    }
+    else
+    {
+        inspector->setHidden(false);
+    }
+
+
+
+    if(map)
+    {
+        map->setHidden(true);
+    }
+
+    if(ParameterWgt)
+    {
+       ParameterWgt->setHidden(true);
+    }
+
+    if(MissionWgt)
+    {
+       MissionWgt->setHidden(true);
+    }
+
+    //移除按钮
+    ui->menuBar->removeAction(ui->actionCreatePoint);
+    ui->menuBar->removeAction(ui->actionRule);
+    ui->menuBar->removeAction(ui->actionClearAllPoint);
+    ui->menuBar->removeAction(ui->actionDownLoadWayPoint);
+    ui->menuBar->removeAction(ui->actionUploadWayPoint);
+
+
+}
+
+
+
+
+
 void MainWindow::on_actionSerialPort_triggered()
 {
     if(dlink->state_port())
@@ -414,6 +484,12 @@ void MainWindow::on_actionMission_triggered()
         map->setHidden(true);
     }
 
+    if(inspector)
+    {
+        inspector->setHidden(true);
+    }
+
+
     if(ParameterWgt)
     {
        ParameterWgt->setHidden(true);
@@ -467,6 +543,11 @@ void MainWindow::on_actionParameter_triggered()
         MissionWgt->setHidden(true);
     }
 
+    if(inspector)
+    {
+        inspector->setHidden(true);
+    }
+
     if(map)
     {
         map->setHidden(true);
@@ -509,6 +590,11 @@ void MainWindow::on_actionMap_triggered()
             if(ParameterWgt)
             {
                ParameterWgt->setHidden(true);
+            }
+
+            if(inspector)
+            {
+                inspector->setHidden(true);
             }
 
 
@@ -675,3 +761,44 @@ void MainWindow::on_actionUploadWayPoint_triggered()
 {
     SendWayPoint(PointList);
 }
+
+void MainWindow::updateInspector(void)
+{
+    float frequency = 10;
+
+    QString str = QString("data inspector update in %1 Hz\n").arg(frequency);
+
+    str.append(tr("GPS.svn:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("GPS.fixtype:") + QString::number(dlink->vehicle.GPS.fixtype) + tr("\n"));
+    str.append(tr("GPS.altitude:") + QString::number(dlink->vehicle.GPS.altitude) + tr("\n"));
+    str.append(tr("GPS.latitude:") + QString::number(dlink->vehicle.GPS.latitude,'f',8) + tr("\n"));
+    str.append(tr("GPS.longitude:") + QString::number(dlink->vehicle.GPS.longitude,'f',8) + tr("\n"));
+    str.append(tr("GPS.groundspeed:") + QString::number(dlink->vehicle.GPS.groundspeed) + tr("\n"));
+    str.append(tr("GPS.course:") + QString::number(dlink->vehicle.GPS.course) + tr("\n"));
+    str.append(tr("Ultrasonic.front:") + QString::number(dlink->vehicle.Ultrasonic.front) + tr("\n"));
+    str.append(tr("Ultrasonic.left:") + QString::number(dlink->vehicle.Ultrasonic.left) + tr("\n"));
+    str.append(tr("Ultrasonic.right:") + QString::number(dlink->vehicle.Ultrasonic.right) + tr("\n"));
+    str.append(tr("Satuts.currentwaypoint:") + QString::number(dlink->vehicle.Satuts.currentwaypoint) + tr("\n"));
+    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+
+
+    inspector->setString(str);
+
+}
+
+
+
+
+
+
+
+
+

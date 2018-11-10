@@ -19,6 +19,12 @@ Mission::Mission(QWidget *parent) :
     ui->treeWidget->setDragEnabled(false);
     ui->treeWidget->setDragDropMode(QAbstractItemView::NoDragDrop);
 
+
+    connect(ui->treeWidget,SIGNAL(doubleClicked(QModelIndex)),
+            this,SLOT(HeaderDoubleClicked(QModelIndex)));
+
+
+
     reflushTree();
 
 }
@@ -79,6 +85,93 @@ void Mission::addPoints(QList<_waypoint> p)
 }
 
 
+void Mission::HeaderDoubleClicked(QModelIndex Index)
+{
+    QString Str = ui->treeWidget->headerItem()->text(Index.column());
+
+    if(Str == "Type")
+    {
+        qDebug() << Str;
+        ui->comboBox_type->setEnabled(true);
+        ui->comboBox_action->setEnabled(false);
+        ui->lineEdit_Alt->setEnabled(false);
+        ui->lineEdit_Lng->setEnabled(false);
+        ui->lineEdit_Lat->setEnabled(false);
+        ui->lineEdit_Spd->setEnabled(false);
+        ui->lineEdit_Cog->setEnabled(false);
+    }
+    else if(Str == "Action")
+    {
+        qDebug() << Str;
+        ui->comboBox_type->setEnabled(false);
+        ui->comboBox_action->setEnabled(true);
+        ui->lineEdit_Alt->setEnabled(false);
+        ui->lineEdit_Lng->setEnabled(false);
+        ui->lineEdit_Lat->setEnabled(false);
+        ui->lineEdit_Spd->setEnabled(false);
+        ui->lineEdit_Cog->setEnabled(false);
+    }
+    else if(Str == "Altitude")
+    {
+        qDebug() << Str;
+        ui->comboBox_type->setEnabled(false);
+        ui->comboBox_action->setEnabled(false);
+        ui->lineEdit_Alt->setEnabled(true);
+        ui->lineEdit_Lng->setEnabled(false);
+        ui->lineEdit_Lat->setEnabled(false);
+        ui->lineEdit_Spd->setEnabled(false);
+        ui->lineEdit_Cog->setEnabled(false);
+    }
+    else if(Str == "Latitude")
+    {
+        qDebug() << Str;
+        ui->comboBox_type->setEnabled(false);
+        ui->comboBox_action->setEnabled(false);
+        ui->lineEdit_Alt->setEnabled(false);
+        ui->lineEdit_Lng->setEnabled(false);
+        ui->lineEdit_Lat->setEnabled(true);
+        ui->lineEdit_Spd->setEnabled(false);
+        ui->lineEdit_Cog->setEnabled(false);
+    }
+    else if(Str == "Longitude")
+    {
+        qDebug() << Str;
+        ui->comboBox_type->setEnabled(false);
+        ui->comboBox_action->setEnabled(false);
+        ui->lineEdit_Alt->setEnabled(false);
+        ui->lineEdit_Lng->setEnabled(true);
+        ui->lineEdit_Lat->setEnabled(false);
+        ui->lineEdit_Spd->setEnabled(false);
+        ui->lineEdit_Cog->setEnabled(false);
+    }
+    else if(Str == "Speed")
+    {
+        qDebug() << Str;
+        ui->comboBox_type->setEnabled(false);
+        ui->comboBox_action->setEnabled(false);
+        ui->lineEdit_Alt->setEnabled(false);
+        ui->lineEdit_Lng->setEnabled(false);
+        ui->lineEdit_Lat->setEnabled(false);
+        ui->lineEdit_Spd->setEnabled(true);
+        ui->lineEdit_Cog->setEnabled(false);
+
+    }
+    else if(Str == "Course")
+    {
+        qDebug() << Str;
+        ui->comboBox_type->setEnabled(false);
+        ui->comboBox_action->setEnabled(false);
+        ui->lineEdit_Alt->setEnabled(false);
+        ui->lineEdit_Lng->setEnabled(false);
+        ui->lineEdit_Lat->setEnabled(false);
+        ui->lineEdit_Spd->setEnabled(false);
+        ui->lineEdit_Cog->setEnabled(true);
+    }
+
+    isDoubleClicked = true;
+
+
+}
 
 
 void Mission::on_treeWidget_itemSelectionChanged()
@@ -114,39 +207,83 @@ void Mission::on_pushButton_ok_clicked()
 {
     QTreeWidgetItem *item = ui->treeWidget->currentItem();
 
-
-    if(item != NULL)//确认已经有选择的点否则不修改
+    if(isDoubleClicked)
     {
-        //QModelIndex index = ui->treeWidget->currentIndex();
-        _waypoint point;
-        point.id = item->text(1).toInt();//ID保持
-        point.type = ui->comboBox_type->currentData().toInt();
-        point.action = ui->comboBox_action->currentData().toInt();
-        point.altitude = ui->lineEdit_Alt->text().toFloat();
-        point.latitude = ui->lineEdit_Lat->text().toDouble();
-        point.longitude = ui->lineEdit_Lng->text().toDouble();
-        point.speed = ui->lineEdit_Spd->text().toFloat();
-        point.course = ui->lineEdit_Cog->text().toFloat();
+        isDoubleClicked = false;
 
-        WayPoint.replace(item->text(1).toInt(),point);//1号是ID
+        QString rawData;
 
-        emit changePoints(WayPoint);
-        reflushTree();//刷新一下
+        if(ui->comboBox_type->isEnabled()) rawData = QString::number(ui->comboBox_type->currentData(Qt::DisplayRole).toInt());
+        else if(ui->comboBox_action->isEnabled()) rawData = QString::number(ui->comboBox_action->currentData(Qt::DisplayRole).toInt());
+        else if(ui->lineEdit_Alt->isEnabled()) rawData = ui->lineEdit_Alt->text();
+        else if(ui->lineEdit_Lng->isEnabled()) rawData = ui->lineEdit_Lng->text();
+        else if(ui->lineEdit_Lat->isEnabled()) rawData = ui->lineEdit_Lat->text();
+        else if(ui->lineEdit_Spd->isEnabled()) rawData = ui->lineEdit_Spd->text();
+        else if(ui->lineEdit_Cog->isEnabled()) rawData = ui->lineEdit_Cog->text();
+
+
+        qDebug() << rawData;
+
+        ui->comboBox_type->setEnabled(true);
+        ui->comboBox_action->setEnabled(true);
+        ui->lineEdit_Alt->setEnabled(true);
+        ui->lineEdit_Lng->setEnabled(true);
+        ui->lineEdit_Lat->setEnabled(true);
+        ui->lineEdit_Spd->setEnabled(true);
+        ui->lineEdit_Cog->setEnabled(true);
+    }
+    else
+    {
+        if(item != NULL)//确认已经有选择的点否则不修改
+        {
+            //QModelIndex index = ui->treeWidget->currentIndex();
+            _waypoint point;
+            point.id = item->text(1).toInt();//ID保持
+            point.type = ui->comboBox_type->currentData().toInt();
+            point.action = ui->comboBox_action->currentData().toInt();
+            point.altitude = ui->lineEdit_Alt->text().toFloat();
+            point.latitude = ui->lineEdit_Lat->text().toDouble();
+            point.longitude = ui->lineEdit_Lng->text().toDouble();
+            point.speed = ui->lineEdit_Spd->text().toFloat();
+            point.course = ui->lineEdit_Cog->text().toFloat();
+
+            WayPoint.replace(item->text(1).toInt(),point);//1号是ID
+
+            emit changePoints(WayPoint);
+            reflushTree();//刷新一下
+        }
     }
 }
 
 void Mission::on_pushButton_cancel_clicked()
 {
-    ui->treeWidget->setItemSelected(ui->treeWidget->currentItem(),false);
 
-    ui->comboBox_type->clear();
-    ui->comboBox_action->clear();
 
-    ui->lineEdit_Alt->clear();//4号是海拔
-    ui->lineEdit_Lat->clear();
-    ui->lineEdit_Lng->clear();
-    ui->lineEdit_Spd->clear();
-    ui->lineEdit_Cog->clear();
+    if(isDoubleClicked == true)
+    {
+
+        isDoubleClicked = false;
+        ui->comboBox_type->setEnabled(true);
+        ui->comboBox_action->setEnabled(true);
+        ui->lineEdit_Alt->setEnabled(true);
+        ui->lineEdit_Lng->setEnabled(true);
+        ui->lineEdit_Lat->setEnabled(true);
+        ui->lineEdit_Spd->setEnabled(true);
+        ui->lineEdit_Cog->setEnabled(true);
+    }
+    else
+    {
+        ui->treeWidget->setItemSelected(ui->treeWidget->currentItem(),false);
+
+        ui->comboBox_type->clear();
+        ui->comboBox_action->clear();
+
+        ui->lineEdit_Alt->clear();//4号是海拔
+        ui->lineEdit_Lat->clear();
+        ui->lineEdit_Lng->clear();
+        ui->lineEdit_Spd->clear();
+        ui->lineEdit_Cog->clear();
+    }
 }
 
 void Mission::on_pushButton_download_clicked()

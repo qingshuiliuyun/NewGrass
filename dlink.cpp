@@ -172,6 +172,7 @@ void DLink::R_Decode(QByteArray data)
          {
               data = data.mid(7);
               memcpy(&vehicle.HeardBeat,data,sizeof(vehicle.HeardBeat));//从第7个复制
+              emit dlinkUpdate();
          }break;
 
          case 0x0004://ECHO
@@ -234,12 +235,14 @@ void DLink::R_Decode(QByteArray data)
          {
               data = data.mid(7);
               memcpy(&vehicle.GPS,data,dframe.LEN-9);//从第7个复制
+              emit dlinkUpdate();
          }break;
 
          case 0x0030://Ultrasonic
          {
               data = data.mid(7);
               memcpy(&vehicle.Ultrasonic,data,dframe.LEN-9);//从第7个复制
+              emit dlinkUpdate();
          }break;
 
          case 0x0040://WayPoint
@@ -264,6 +267,7 @@ void DLink::R_Decode(QByteArray data)
          {
               data = data.mid(7);
               memcpy(&vehicle.Satuts,data,dframe.LEN-9);//从第7个复制
+              emit dlinkUpdate();
          }break;
      }
 }
