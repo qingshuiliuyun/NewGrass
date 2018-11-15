@@ -12,7 +12,7 @@
 #include "QPushButton"
 #include "DlinkInspector/dlinkinspector.h"
 #include "QTimer"
-
+#include "QComboBox"
 #include "Mission/mission.h"
 #include "MapDialog/mapsettingdialog.h"
 #include "Parameter/parameter.h"
@@ -55,7 +55,7 @@ private slots:
 
     void updateInspector(void);
 
-
+    void TestButtonClicked(bool);
 
     void SendCMD(uint32_t ID,uint32_t Value);
 
@@ -112,6 +112,10 @@ private:
     QPushButton *StartButton = Q_NULLPTR;
     QPushButton *StopButton = Q_NULLPTR;
     QPushButton *BackButton = Q_NULLPTR;
+
+
+    QPushButton *TestButton = Q_NULLPTR;
+    QComboBox   *TestComBox = Q_NULLPTR;
 
 };
 

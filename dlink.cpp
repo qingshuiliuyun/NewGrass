@@ -411,12 +411,18 @@ void DLink::SendWayPoint(void)
 
 void DLink::SendWayPointThread(void)
 {
-    WayPointTimer->start(100);//100ms一个航点
+    if(waypointlist.size() > 0)
+    {
+        WayPointTimer->start(100);//100ms一个航点
 
-    //初始化第一个航点以及发送标志
-    SendWayPointCount = 0;
-    vehicle.WayPoint = waypointlist.at(SendWayPointCount);
-
+        //初始化第一个航点以及发送标志
+        SendWayPointCount = 0;
+        vehicle.WayPoint = waypointlist.at(SendWayPointCount);
+    }
+    else
+    {
+        qInfo() << "Have no any waypoint,please create first";
+    }
 
 }
 

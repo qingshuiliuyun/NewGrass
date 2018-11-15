@@ -53,3 +53,4 @@ MOBILITY =
 RESOURCES += \
     resource/resource.qrc
 
+TRANSLATIONS = cn.ts

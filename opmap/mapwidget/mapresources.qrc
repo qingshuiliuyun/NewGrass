@@ -24,5 +24,6 @@
         <file>images/Fixwing.png</file>
         <file>images/Fixwing1.png</file>
         <file>images/Rotor.png</file>
+        <file>images/planeR.png</file>
     </qresource>
 </RCC>

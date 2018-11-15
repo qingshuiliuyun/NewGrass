@@ -98,6 +98,10 @@ public:
 
     typedef struct {
         uint16_t currentwaypoint;
+        float voltage1;
+        float voltage2;
+        float voltage3;
+        float voltage4;
     }_status;
 
 

@@ -63,13 +63,24 @@ MainWindow::MainWindow(QWidget *parent) :
     StopButton = new QPushButton(tr("Stop"));
     BackButton = new QPushButton(tr("Back"));
 
+    TestButton = new QPushButton(tr("TestButton"));
+    TestComBox = new QComboBox;
 
+
+    QStringList StrList;
+
+    StrList << "SetHome"
+            << "SetTarget";
+
+    TestComBox->addItems(StrList);
 
 
     map = new mapcontrol::OPMapWidget(this);
     map->SetShowHome(false);
     map->SetShowCompass(false);
     map->SetUseOpenGL(true);
+    map->SetShowUAV(true);
+    map->SetUavPic("planeR.png");
 
     IniFile *ini = new IniFile;
     QString maptype = ini->ReadIni("config.ini","MapSetting","maptype");
@@ -77,6 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
         map->SetMapType(mapcontrol::Helper::MapTypeFromString(maptype));
     else
         map->SetMapType(mapcontrol::Helper::MapTypeFromString("BingSatellite"));
+
     map->setGeometry(0,
                      ui->menuBar->height(),
                      this->width(),
@@ -107,6 +119,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(dlink,SIGNAL(recievePoint(Mission::_waypoint)),
             this,SLOT(RecievePoint(Mission::_waypoint)));
+
+
+
+    connect(StartButton,SIGNAL(clicked(bool)),
+            this,SLOT(StartMission_Clicked(bool)));
+
+    connect(StopButton,SIGNAL(clicked(bool)),
+            this,SLOT(StopMission_Clicked(bool)));
+
+    connect(BackButton,SIGNAL(clicked(bool)),
+            this,SLOT(BackHome_Clicked(bool)));
+
+    connect(TestButton,SIGNAL(clicked(bool)),
+            this,SLOT(TestButtonClicked(bool)));
+
 
 
 }
@@ -392,6 +419,10 @@ void MainWindow::on_actionSerialPort_triggered()
             ui->statusBar->removeWidget(StopButton);
             ui->statusBar->removeWidget(BackButton);
 
+            ui->statusBar->removeWidget(TestComBox);
+            ui->statusBar->removeWidget(TestButton);
+
+            ui->statusBar->adjustSize();
             disconnect(StartButton,SIGNAL(clicked(bool)),
                     this,SLOT(StartMission_Clicked(bool)));
 
@@ -400,6 +431,10 @@ void MainWindow::on_actionSerialPort_triggered()
 
             disconnect(BackButton,SIGNAL(clicked(bool)),
                     this,SLOT(BackHome_Clicked(bool)));
+
+            disconnect(TestButton,SIGNAL(clicked(bool)),
+                    this,SLOT(TestButtonClicked(bool)));
+
 
         }
     }
@@ -422,10 +457,14 @@ void MainWindow::on_actionSerialPort_triggered()
                 dlink->setup_port(dlg.port,dlg.baudrate,dlg.parity);
                 ui->actionSerialPort->setText(dlg.port);
 
-
                 ui->statusBar->addPermanentWidget(StartButton);
                 ui->statusBar->addPermanentWidget(StopButton);
                 ui->statusBar->addPermanentWidget(BackButton);
+
+                ui->statusBar->addPermanentWidget(TestComBox);
+                ui->statusBar->addPermanentWidget(TestButton);
+
+                ui->statusBar->adjustSize();
 
                 connect(StartButton,SIGNAL(clicked(bool)),
                         this,SLOT(StartMission_Clicked(bool)));
@@ -436,6 +475,8 @@ void MainWindow::on_actionSerialPort_triggered()
                 connect(BackButton,SIGNAL(clicked(bool)),
                         this,SLOT(BackHome_Clicked(bool)));
 
+                connect(TestButton,SIGNAL(clicked(bool)),
+                        this,SLOT(TestButtonClicked(bool)));
             }
         }
     }
@@ -744,6 +785,7 @@ void MainWindow::SendWayPoint(QList<Mission::_waypoint> list)
          dlink->WayPointAppend(item);
      }
 
+     dlink->SendCMD(0x41,dlink->waypointlist.size());//开始发送航线，并且告诉设备航点的总数量
 
      dlink->SendWayPointThread();
 }
@@ -751,6 +793,13 @@ void MainWindow::SendWayPoint(QList<Mission::_waypoint> list)
 
 void MainWindow::on_actionDownLoadWayPoint_triggered()
 {
+    if(MissionWgt)
+    {
+        MissionWgt->WayPoint.clear();
+    }
+
+    map->WPDeleteAll();
+
     PointList.clear();//清除航线
     dlink->WayPointClear();
     dlink->isGetNextWayPoint = true;
@@ -762,10 +811,30 @@ void MainWindow::on_actionUploadWayPoint_triggered()
     SendWayPoint(PointList);
 }
 
+void MainWindow::TestButtonClicked(bool)
+{
+    //qDebug() << TestComBox->currentIndex();
+    dlink->SendCMD(0x60,TestComBox->currentIndex());//测试按键
+}
+
+
+
+
+
 void MainWindow::updateInspector(void)
 {
-    float frequency = 10;
+    //更新地图上的显示
 
+    map->UAV->SetUAVHeading(dlink->vehicle.GPS.course);
+    internals::PointLatLng position;
+    position.SetLat(dlink->vehicle.GPS.latitude);
+    position.SetLng(dlink->vehicle.GPS.longitude);
+    //CurrentPoint = position;
+    map->UAV->SetUAVPos(position,dlink->vehicle.GPS.altitude);
+
+
+    //更新监视器
+    float frequency = 10;
     QString str = QString("data inspector update in %1 Hz\n").arg(frequency);
 
     str.append(tr("GPS.svn:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
@@ -779,10 +848,10 @@ void MainWindow::updateInspector(void)
     str.append(tr("Ultrasonic.left:") + QString::number(dlink->vehicle.Ultrasonic.left) + tr("\n"));
     str.append(tr("Ultrasonic.right:") + QString::number(dlink->vehicle.Ultrasonic.right) + tr("\n"));
     str.append(tr("Satuts.currentwaypoint:") + QString::number(dlink->vehicle.Satuts.currentwaypoint) + tr("\n"));
-    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
-    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
-    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
-    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("Satuts.voltage1:") + QString::number(dlink->vehicle.Satuts.voltage1) + tr("\n"));
+    str.append(tr("Satuts.voltage2:") + QString::number(dlink->vehicle.Satuts.voltage2) + tr("\n"));
+    str.append(tr("Satuts.voltage3:") + QString::number(dlink->vehicle.Satuts.voltage3) + tr("\n"));
+    str.append(tr("Satuts.voltage4:") + QString::number(dlink->vehicle.Satuts.voltage4) + tr("\n"));
     str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
     str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
     str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
