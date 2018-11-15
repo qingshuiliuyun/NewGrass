@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>img/GPS.png</file>
+        <file>img/Mission.png</file>
+        <file>img/Position.png</file>
+        <file>img/mission1.png</file>
+        <file>img/clock.png</file>
+        <file>img/RGB.png</file>
+    </qresource>
+</RCC>
