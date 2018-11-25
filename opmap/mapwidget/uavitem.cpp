@@ -79,6 +79,8 @@ void UAVItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     painter->setRenderHint(QPainter::Antialiasing, true);
 
     // Set pen attributes
+    //不显示箭头
+    /*
     QColor myColor(Qt::red);
     myPen.setWidth(3);
     myPen.setColor(myColor);
@@ -86,6 +88,7 @@ void UAVItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     painter->drawPolygon(arrowHead);
     painter->setPen(myPen);
     painter->drawLine(arrowShaft);
+
 
     // Set trend arc's color
     myPen.setColor(Qt::magenta);
@@ -98,7 +101,7 @@ void UAVItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
         QRectF rect(-2 * trendRadius, -trendRadius, trendRadius * 2, trendRadius * 2);
         painter->drawArc(rect, 0 * 16, -trendSpanAngle * 16);
     }
-
+     */
     // *********** Create time rings
     if (groundspeed_mps_filt > 0) { // Don't clutter the display with rings that are only one pixel wide
         myPen.setWidth(2);
@@ -120,8 +123,8 @@ void UAVItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     painter->rotate(-1 * rot);
 
     myPen.setWidth(1);
-    myPen.setColor(Qt::white);
-    painter->setBrush(Qt::white);
+    myPen.setColor(Qt::black);
+    painter->setBrush(Qt::black);
     painter->setPen(myPen);
     painter->drawPath(textPath);
 }
@@ -135,26 +138,24 @@ void UAVItem::updateTextOverlay()
         return;
     }
 
-    QFont borderfont("Arial", 14, QFont::Normal, false);
+    QFont borderfont("Arial", 7, QFont::Normal, false);
 
     // Top left corner of text
     int textAnchorX = 20;
-    int textAnchorY = 20;
+    int textAnchorY = 0;
 
     QString uavoInfoStrLine1, uavoInfoStrLine2;
     QString uavoInfoStrLine3, uavoInfoStrLine4;
     QString uavoInfoStrLine5;
 
-    uavoInfoStrLine1.append(QString("CAS: %1 kph").arg(CAS_mps * 3.6));
-    uavoInfoStrLine2.append(QString("Groundspeed: %1 kph").arg(groundspeed_kph, 0, 'f', 1));
-    uavoInfoStrLine3.append(QString("Lat-Lon: %1, %2").arg(coord.Lat(), 0, 'f', 7).arg(coord.Lng(), 0, 'f', 7));
-    uavoInfoStrLine4.append(QString("North-East: %1 m, %2 m").arg(NED[0], 0, 'f', 1).arg(NED[1], 0, 'f', 1));
-    uavoInfoStrLine5.append(QString("Altitude: %1 m").arg(-NED[2], 0, 'f', 1));
+    uavoInfoStrLine1.append(QString("CAS: %1").arg(CAS_mps * 3.6));//空速
+    uavoInfoStrLine2.append(QString("CGS: %1").arg(groundspeed_kph, 0, 'f', 1));//地速
+    uavoInfoStrLine3.append(QString("POS: %1,%2").arg(coord.Lat(), 0, 'f', 8).arg(coord.Lng(), 0, 'f', 8));
+    uavoInfoStrLine4.append(QString("NED: %1,%2,%3").arg(NED[0], 0, 'f', 1).arg(NED[1], 0, 'f', 1).arg(NED[2], 0, 'f', 1));
     temp.addText(textAnchorX, textAnchorY + 16 * 0, borderfont, uavoInfoStrLine1);
     temp.addText(textAnchorX, textAnchorY + 16 * 1, borderfont, uavoInfoStrLine2);
     temp.addText(textAnchorX, textAnchorY + 16 * 2, borderfont, uavoInfoStrLine3);
     temp.addText(textAnchorX, textAnchorY + 16 * 3, borderfont, uavoInfoStrLine4);
-    temp.addText(textAnchorX, textAnchorY + 16 * 4, borderfont, uavoInfoStrLine5);
 
     // Add text for time rings.
     if (groundspeed_mps > 0) {

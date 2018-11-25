@@ -38,7 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle(tr("NewGrass"));
     setWindowIcon(QIcon(":/img/Remote.png"));
 
-
+    h_StatusBar = new QStatusBar;
 
     //先安装调试输出句柄
     //qInstallMessageHandler(myMessageOutput);
@@ -82,6 +82,15 @@ MainWindow::MainWindow(QWidget *parent) :
     map->SetShowUAV(true);
     map->SetUavPic("planeR.png");
 
+    map->UAV->SetShowUAVInfo(true);
+
+
+    internals::PointLatLng LatLng;
+    LatLng.SetLat(39);
+    LatLng.SetLng(116);
+    map->UAV->SetUAVPos(LatLng,5);
+
+
     IniFile *ini = new IniFile;
     QString maptype = ini->ReadIni("config.ini","MapSetting","maptype");
     if(!maptype.isEmpty())
@@ -120,6 +129,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dlink,SIGNAL(recievePoint(Mission::_waypoint)),
             this,SLOT(RecievePoint(Mission::_waypoint)));
 
+
+    connect(dlink,SIGNAL(SendWaypoint(int32_t)),
+            this,SLOT(WayPointSendStatuBar(int32_t)));
+
+    connect(dlink,SIGNAL(RecieveWaypoint(int32_t)),
+            this,SLOT(WayPointSendStatuBar(int32_t)));
 
 
     connect(StartButton,SIGNAL(clicked(bool)),
@@ -232,6 +247,10 @@ void MainWindow::mousePressEvent(QMouseEvent* event)
     LatLng.SetLng(map->currentMousePosition().Lng());
     ui->statusBar->showMessage(map->currentMousePosition().ToString(),10000);
 
+
+
+
+
 }
 
 
@@ -241,6 +260,8 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
     LatLng.SetLat(map->currentMousePosition().Lat());
     LatLng.SetLng(map->currentMousePosition().Lng());
     ui->statusBar->showMessage(map->currentMousePosition().ToString(),10000);
+    map->UAV->SetUAVPos(LatLng,5);
+    map->update();
 }
 
 
@@ -791,6 +812,8 @@ void MainWindow::SendWayPoint(QList<Mission::_waypoint> list)
 }
 
 
+
+
 void MainWindow::on_actionDownLoadWayPoint_triggered()
 {
     if(MissionWgt)
@@ -818,6 +841,16 @@ void MainWindow::TestButtonClicked(bool)
 }
 
 
+
+void MainWindow::WayPointRecieveStatuBar(int32_t Value)
+{
+    ui->statusBar->showMessage(tr("recieve:") + QString::number(Value),10000);
+}
+
+void MainWindow::WayPointSendStatuBar(int32_t Value)
+{
+    ui->statusBar->showMessage(tr("send:") + QString::number(Value),10000);
+}
 
 
 

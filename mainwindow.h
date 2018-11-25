@@ -18,7 +18,7 @@
 #include "Parameter/parameter.h"
 #include "inifile.h"
 #include "QPushButton"
-
+#include "QStatusBar"
 
 namespace Ui {
 class MainWindow;
@@ -67,6 +67,8 @@ private slots:
 
     void ClearInsidePoint(void);
 
+    void WayPointRecieveStatuBar(int32_t Value);
+    void WayPointSendStatuBar(int32_t Value);
 
 
 
@@ -98,7 +100,7 @@ private:
     Mission   *MissionWgt = Q_NULLPTR;
     Parameter *ParameterWgt = Q_NULLPTR;
 
-
+    QStatusBar *h_StatusBar;
 
 
     QList<Mission::_waypoint> PointList;

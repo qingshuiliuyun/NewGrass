@@ -218,6 +218,10 @@ signals:
    void dlinkUpdate(void);
 
 
+   void RecieveWaypoint(int32_t);
+   void SendWaypoint(int32_t);
+
+
 public slots:
     void readPendingDatagrams(void);
 

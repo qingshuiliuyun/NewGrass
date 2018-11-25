@@ -2,6 +2,55 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name>AttitudePanel</name>
+    <message>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="788"/>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="864"/>
+        <source>m/s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="883"/>
+        <source>GPS:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="884"/>
+        <source> </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="932"/>
+        <source>无效</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="934"/>
+        <source>正常</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="1026"/>
+        <source>海拔</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="1031"/>
+        <source>气压</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="1065"/>
+        <source>空速</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AttitudePanel/attitudepanel.cpp" line="1070"/>
+        <source>地速</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ConnectDialog</name>
     <message>
         <location filename="SerialPortDialog/connectdialog.ui" line="14"/>
@@ -71,20 +120,20 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="30"/>
-        <location filename="mainwindow.cpp" line="416"/>
+        <location filename="mainwindow.cpp" line="431"/>
         <source>SerialPort</source>
         <translation>串口</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="35"/>
-        <location filename="mainwindow.cpp" line="353"/>
-        <location filename="mainwindow.cpp" line="490"/>
+        <location filename="mainwindow.cpp" line="368"/>
+        <location filename="mainwindow.cpp" line="505"/>
         <source>Mission</source>
         <translation>任务</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="40"/>
-        <location filename="mainwindow.cpp" line="554"/>
+        <location filename="mainwindow.cpp" line="569"/>
         <source>Parameter</source>
         <translation>参数</translation>
     </message>
@@ -95,13 +144,13 @@
     </message>
     <message>
         <location filename="mainwindow.ui" line="50"/>
-        <location filename="mainwindow.cpp" line="672"/>
+        <location filename="mainwindow.cpp" line="687"/>
         <source>CreatePoint</source>
         <translation>生成</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="55"/>
-        <location filename="mainwindow.cpp" line="686"/>
+        <location filename="mainwindow.cpp" line="701"/>
         <source>Rule</source>
         <translation>测量</translation>
     </message>
@@ -151,133 +200,133 @@
         <translation>测试</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="410"/>
-        <location filename="mainwindow.cpp" line="445"/>
+        <location filename="mainwindow.cpp" line="425"/>
+        <location filename="mainwindow.cpp" line="460"/>
         <source>SelectPort</source>
         <translation>选择端口</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="614"/>
+        <location filename="mainwindow.cpp" line="629"/>
         <source>MapSetting</source>
         <translation>地图设置</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="667"/>
+        <location filename="mainwindow.cpp" line="682"/>
         <source>Creating...</source>
         <translation>正在生成...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="681"/>
+        <location filename="mainwindow.cpp" line="696"/>
         <source>Measure</source>
         <translation>测量</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="840"/>
+        <location filename="mainwindow.cpp" line="855"/>
         <source>GPS.svn:</source>
         <translation>GPS卫星数：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="840"/>
-        <location filename="mainwindow.cpp" line="841"/>
-        <location filename="mainwindow.cpp" line="842"/>
-        <location filename="mainwindow.cpp" line="843"/>
-        <location filename="mainwindow.cpp" line="844"/>
-        <location filename="mainwindow.cpp" line="845"/>
-        <location filename="mainwindow.cpp" line="846"/>
-        <location filename="mainwindow.cpp" line="847"/>
-        <location filename="mainwindow.cpp" line="848"/>
-        <location filename="mainwindow.cpp" line="849"/>
-        <location filename="mainwindow.cpp" line="850"/>
-        <location filename="mainwindow.cpp" line="851"/>
-        <location filename="mainwindow.cpp" line="852"/>
-        <location filename="mainwindow.cpp" line="853"/>
-        <location filename="mainwindow.cpp" line="854"/>
         <location filename="mainwindow.cpp" line="855"/>
         <location filename="mainwindow.cpp" line="856"/>
         <location filename="mainwindow.cpp" line="857"/>
         <location filename="mainwindow.cpp" line="858"/>
         <location filename="mainwindow.cpp" line="859"/>
+        <location filename="mainwindow.cpp" line="860"/>
+        <location filename="mainwindow.cpp" line="861"/>
+        <location filename="mainwindow.cpp" line="862"/>
+        <location filename="mainwindow.cpp" line="863"/>
+        <location filename="mainwindow.cpp" line="864"/>
+        <location filename="mainwindow.cpp" line="865"/>
+        <location filename="mainwindow.cpp" line="866"/>
+        <location filename="mainwindow.cpp" line="867"/>
+        <location filename="mainwindow.cpp" line="868"/>
+        <location filename="mainwindow.cpp" line="869"/>
+        <location filename="mainwindow.cpp" line="870"/>
+        <location filename="mainwindow.cpp" line="871"/>
+        <location filename="mainwindow.cpp" line="872"/>
+        <location filename="mainwindow.cpp" line="873"/>
+        <location filename="mainwindow.cpp" line="874"/>
         <source>
 </source>
         <translation>
 </translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="841"/>
+        <location filename="mainwindow.cpp" line="856"/>
         <source>GPS.fixtype:</source>
         <translation>GPS修正类型：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="842"/>
+        <location filename="mainwindow.cpp" line="857"/>
         <source>GPS.altitude:</source>
         <translation>GPS海拔：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="843"/>
+        <location filename="mainwindow.cpp" line="858"/>
         <source>GPS.latitude:</source>
         <translation>GPS纬度：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="844"/>
+        <location filename="mainwindow.cpp" line="859"/>
         <source>GPS.longitude:</source>
         <translation>GPS经度：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="845"/>
+        <location filename="mainwindow.cpp" line="860"/>
         <source>GPS.groundspeed:</source>
         <translation>GPS地速：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="846"/>
+        <location filename="mainwindow.cpp" line="861"/>
         <source>GPS.course:</source>
         <translation>GPS航向：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="847"/>
+        <location filename="mainwindow.cpp" line="862"/>
         <source>Ultrasonic.front:</source>
         <translation>前超声波：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="848"/>
+        <location filename="mainwindow.cpp" line="863"/>
         <source>Ultrasonic.left:</source>
         <translation>左超声波：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="849"/>
+        <location filename="mainwindow.cpp" line="864"/>
         <source>Ultrasonic.right:</source>
         <translation>右超声波：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="850"/>
+        <location filename="mainwindow.cpp" line="865"/>
         <source>Satuts.currentwaypoint:</source>
         <translation>当前航点：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="851"/>
+        <location filename="mainwindow.cpp" line="866"/>
         <source>Satuts.voltage1:</source>
         <translation>电压1：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="852"/>
+        <location filename="mainwindow.cpp" line="867"/>
         <source>Satuts.voltage2:</source>
         <translation>电压2：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="853"/>
+        <location filename="mainwindow.cpp" line="868"/>
         <source>Satuts.voltage3:</source>
         <translation>电压3：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="854"/>
+        <location filename="mainwindow.cpp" line="869"/>
         <source>Satuts.voltage4:</source>
         <translation>电压4：</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="855"/>
-        <location filename="mainwindow.cpp" line="856"/>
-        <location filename="mainwindow.cpp" line="857"/>
-        <location filename="mainwindow.cpp" line="858"/>
-        <location filename="mainwindow.cpp" line="859"/>
+        <location filename="mainwindow.cpp" line="870"/>
+        <location filename="mainwindow.cpp" line="871"/>
+        <location filename="mainwindow.cpp" line="872"/>
+        <location filename="mainwindow.cpp" line="873"/>
+        <location filename="mainwindow.cpp" line="874"/>
         <source>GPS_SVN:</source>
         <translation>备用：</translation>
     </message>
@@ -302,7 +351,7 @@
     <message>
         <location filename="opmap/mapwidget/mapripform.ui" line="65"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">取消</translation>
     </message>
     <message>
         <location filename="opmap/mapwidget/mapripform.cpp" line="49"/>
@@ -353,7 +402,7 @@
     <message>
         <location filename="mission/mission.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">窗口</translation>
     </message>
     <message>
         <location filename="mission/mission.ui" line="46"/>
@@ -418,7 +467,7 @@
     <message>
         <location filename="mission/mission.ui" line="201"/>
         <source>OK</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">确定</translation>
     </message>
     <message>
         <location filename="mission/mission.ui" line="210"/>
@@ -428,7 +477,7 @@
     <message>
         <location filename="mission/mission.ui" line="233"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">取消</translation>
     </message>
     <message>
         <location filename="mission/mission.ui" line="240"/>
@@ -438,7 +487,7 @@
     <message>
         <location filename="mission/mission.ui" line="247"/>
         <source>upload</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">上传</translation>
     </message>
     <message>
         <location filename="mission/mission.ui" line="254"/>
@@ -631,7 +680,8 @@ Lng:</source>
         <location filename="opmap/mapwidget/waypointitem.cpp" line="343"/>
         <source>
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">
+</translation>
     </message>
     <message>
         <location filename="opmap/mapwidget/waypointitem.cpp" line="293"/>

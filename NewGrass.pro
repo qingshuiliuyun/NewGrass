@@ -31,7 +31,7 @@ include (./parameter/parameter.pri)
 include (./mission/mission.pri)
 include (./mapDialog/map.pri)
 include (./dlinkinspector/dlinkinspector.pri)
-
+include (./AttitudePanel/AttitudePanel.pri)
 
 SOURCES += \
         main.cpp \
