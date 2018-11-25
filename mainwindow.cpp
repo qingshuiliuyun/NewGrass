@@ -137,6 +137,9 @@ MainWindow::MainWindow(QWidget *parent) :
             this,SLOT(WayPointSendStatuBar(int32_t)));
 
 
+    connect(dlink,SIGNAL(dlinkUpdate()),
+            this,SLOT(updateInspector()));
+
     connect(StartButton,SIGNAL(clicked(bool)),
             this,SLOT(StartMission_Clicked(bool)));
 
@@ -891,8 +894,8 @@ void MainWindow::updateInspector(void)
     str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
     str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
 
-
-    inspector->setString(str);
+    if(inspector)
+       inspector->setString(str);
 
 }
 

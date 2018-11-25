@@ -237,6 +237,11 @@ void DLink::R_Decode(QByteArray data)
          {
               data = data.mid(7);
               memcpy(&vehicle.GPS,data,dframe.LEN-9);//从第7个复制
+
+              qDebug() << vehicle.GPS.fixtype
+                       <<vehicle.GPS.latitude ;
+
+              //qDebug() << "recieve gps";
               emit dlinkUpdate();
          }break;
 
@@ -244,6 +249,9 @@ void DLink::R_Decode(QByteArray data)
          {
               data = data.mid(7);
               memcpy(&vehicle.Ultrasonic,data,dframe.LEN-9);//从第7个复制
+
+
+
               emit dlinkUpdate();
          }break;
 
