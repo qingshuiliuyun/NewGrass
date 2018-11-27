@@ -897,11 +897,15 @@ void MainWindow::updateInspector(void)
     str.append(tr("Satuts.voltage2:") + QString::number(dlink->vehicle.Satuts.voltage2) + tr("\n"));
     str.append(tr("Satuts.voltage3:") + QString::number(dlink->vehicle.Satuts.voltage3) + tr("\n"));
     str.append(tr("Satuts.voltage4:") + QString::number(dlink->vehicle.Satuts.voltage4) + tr("\n"));
-    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
-    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
-    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
-    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
-    str.append(tr("GPS_SVN:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
+    str.append(tr("Satuts.leftfront_p:") + QString::number(dlink->vehicle.Satuts.leftfront_p) + tr("\n"));
+    str.append(tr("Satuts.leftfront_n:") + QString::number(dlink->vehicle.Satuts.leftfront_n) + tr("\n"));
+    str.append(tr("Satuts.leftback_p:") + QString::number(dlink->vehicle.Satuts.leftback_p) + tr("\n"));
+    str.append(tr("Satuts.leftback_n:") + QString::number(dlink->vehicle.Satuts.leftback_n) + tr("\n"));
+    str.append(tr("Satuts.rightfront_p:") + QString::number(dlink->vehicle.Satuts.rightfront_p) + tr("\n"));
+    str.append(tr("Satuts.rightfront_n:") + QString::number(dlink->vehicle.Satuts.rightfront_n) + tr("\n"));
+    str.append(tr("Satuts.rightback_p:") + QString::number(dlink->vehicle.Satuts.rightback_p) + tr("\n"));
+    str.append(tr("Satuts.rightback_n:") + QString::number(dlink->vehicle.Satuts.rightback_n) + tr("\n"));
+
 
     if(inspector)
        inspector->setString(str);
