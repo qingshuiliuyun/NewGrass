@@ -70,7 +70,16 @@ MainWindow::MainWindow(QWidget *parent) :
     QStringList StrList;
 
     StrList << "SetHome"
-            << "SetTarget";
+            << "SetTarget"
+            << "leftfront-p"
+            << "leftfront-n"
+            << "leftback-p"
+            << "leftback-n"
+            << "rightfront-p"
+            << "rightfront-n"
+            << "rightback-p"
+            << "rightback-n"
+            << "MotorReset";
 
     TestComBox->addItems(StrList);
 
@@ -470,8 +479,8 @@ void MainWindow::on_actionSerialPort_triggered()
         dlg.setWindowIcon(QIcon(":/img/FF.ico"));
 
         dlg.port = "COM1";
-        dlg.baudrate = 115200;
-        dlg.parity   = QSerialPort::OddParity;
+        dlg.baudrate = 9600;
+        dlg.parity   = QSerialPort::NoParity;
 
         int ret = dlg.exec();
         if (QDialog::Accepted == ret)

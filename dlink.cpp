@@ -335,7 +335,7 @@ void DLink::SendCMD(uint32_t ID,uint32_t Value)
     if(serialPort)
     {
        serialPort->write(DataToSend,DataCount);
-       qInfo() << "Send CMD";
+       qInfo() << "Send CMD" << ID << Value;
     }
     else
     {
