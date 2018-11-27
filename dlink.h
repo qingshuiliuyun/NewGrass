@@ -113,6 +113,10 @@ public:
         uint16_t rightback_p;
         uint16_t rightback_n;
 
+        float dis2wp;
+        float detaP;
+        float gyroZ;
+
     }_status;
 
 

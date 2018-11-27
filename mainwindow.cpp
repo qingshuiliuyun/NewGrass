@@ -905,7 +905,9 @@ void MainWindow::updateInspector(void)
     str.append(tr("Satuts.rightfront_n:") + QString::number(dlink->vehicle.Satuts.rightfront_n) + tr("\n"));
     str.append(tr("Satuts.rightback_p:") + QString::number(dlink->vehicle.Satuts.rightback_p) + tr("\n"));
     str.append(tr("Satuts.rightback_n:") + QString::number(dlink->vehicle.Satuts.rightback_n) + tr("\n"));
-
+    str.append(tr("Satuts.dis2wp:") + QString::number(dlink->vehicle.Satuts.dis2wp) + tr("\n"));
+    str.append(tr("Satuts.detaP:") + QString::number(dlink->vehicle.Satuts.detaP) + tr("\n"));
+    str.append(tr("Satuts.gyroZ:") + QString::number(dlink->vehicle.Satuts.gyroZ) + tr("\n"));
 
     if(inspector)
        inspector->setString(str);
