@@ -38,12 +38,16 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowTitle(tr("NewGrass"));
     setWindowIcon(QIcon(":/img/Remote.png"));
 
+    //this->grabKeyboard();
+
     h_StatusBar = new QStatusBar;
 
     //先安装调试输出句柄
     //qInstallMessageHandler(myMessageOutput);
 
     //以下是UI
+
+    ui->statusBar->resize(ui->statusBar->width(),20);
     ui->menuBar->addAction(ui->actionSerialPort);
     ui->menuBar->addAction(ui->actionInspector);
     ui->menuBar->addAction(ui->actionMission);
@@ -79,7 +83,9 @@ MainWindow::MainWindow(QWidget *parent) :
             << "rightfront-n"
             << "rightback-p"
             << "rightback-n"
-            << "MotorReset";
+            << "MotorReset"
+            << "IntoDebug"
+            << "OutofDebug";
 
     TestComBox->addItems(StrList);
 
@@ -91,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
     map->SetShowUAV(true);
     map->SetUavPic("planeR.png");
 
-    map->UAV->SetShowUAVInfo(true);
+    //map->UAV->SetShowUAVInfo(true);
 
 
     internals::PointLatLng LatLng;
@@ -246,6 +252,43 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)   //键盘按下事件
+{
+    qDebug() << event;
+
+    switch(event->key())
+    {
+       case Qt::Key_A:
+        dlink->vehicle.SIM.course -=1;
+        if(dlink->vehicle.SIM.course < 0)
+            dlink->vehicle.SIM.course = 360 - dlink->vehicle.SIM.course;
+       break;
+       case Qt::Key_D:
+        dlink->vehicle.SIM.course +=1;
+        if(dlink->vehicle.SIM.course >= 360)
+            dlink->vehicle.SIM.course = dlink->vehicle.SIM.course - 360;
+       break;
+        case Qt::Key_S:
+         dlink->vehicle.SIM.groundspeed -=0.1f;
+         if(dlink->vehicle.SIM.groundspeed < 0)
+             dlink->vehicle.SIM.groundspeed = 0;
+        break;
+        case Qt::Key_W:
+         dlink->vehicle.SIM.groundspeed +=0.1f;
+        break;
+    }
+
+
+
+}
+void MainWindow::keyReleaseEvent(QKeyEvent *event) //键盘松开事件
+{
+    qDebug() << event;
+}
+
+
+
+
 
 void MainWindow::mousePressEvent(QMouseEvent* event)
 {
@@ -290,6 +333,8 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
     qDebug() << QString::number(LatLng.Lat(),'f',8)
              << QString::number(LatLng.Lng(),'f',8);
 
+    //qDebug() << event;
+
     switch(event->buttons())
     {
         case Qt::LeftButton:{
@@ -325,6 +370,11 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
             {
 
             }
+        }break;
+    case Qt::MidButton:{
+
+            map->UAV->DeleteTrail();
+
         }break;
     }
 }
@@ -368,13 +418,28 @@ void MainWindow::PointPosChange(internals::PointLatLng p, int number)
     point.speed = PointList.at(number).speed;
     point.course = PointList.at(number).course;
 
-
-    PointList.replace(number,point);
-
-    if(MissionWgt)
+    if(isCanCreatePoint == 0x01)
     {
-        MissionWgt->addPoints(PointList);//刷新一下
+        PointList.replace(number,point);
+
+        if(MissionWgt)
+        {
+            MissionWgt->addPoints(PointList);//刷新一下
+        }
     }
+    //qDebug() << number;
+    if((dlink->vehicle.Satuts.isDebug == 0x01)&&(number == 0))
+    {
+        dlink->vehicle.SIM.fixtype = 3;
+        dlink->vehicle.SIM.svn = 15;
+        dlink->vehicle.SIM.altitude = 5;
+        dlink->vehicle.SIM.altitude = point.altitude;
+        dlink->vehicle.SIM.latitude = point.latitude;
+        dlink->vehicle.SIM.longitude = point.longitude;
+        //dlink->vehicle.SIM.groundspeed = point.speed;
+        //dlink->vehicle.SIM.course = map;
+    }
+
 }
 
 
@@ -448,14 +513,24 @@ void MainWindow::on_actionSerialPort_triggered()
             dlink->stop_port();
             ui->actionSerialPort->setText(tr("SerialPort"));
 
+            StartButton->resize(0,0);
+            StopButton->resize(0,0);
+            BackButton->resize(0,0);
+
+            TestComBox->resize(0,0);
+            TestButton->resize(0,0);
+
+            /*
             ui->statusBar->removeWidget(StartButton);
             ui->statusBar->removeWidget(StopButton);
             ui->statusBar->removeWidget(BackButton);
 
             ui->statusBar->removeWidget(TestComBox);
             ui->statusBar->removeWidget(TestButton);
+*/
 
-            ui->statusBar->adjustSize();
+
+            //ui->statusBar->adjustSize();
             disconnect(StartButton,SIGNAL(clicked(bool)),
                     this,SLOT(StartMission_Clicked(bool)));
 
@@ -479,7 +554,7 @@ void MainWindow::on_actionSerialPort_triggered()
         dlg.setWindowIcon(QIcon(":/img/FF.ico"));
 
         dlg.port = "COM1";
-        dlg.baudrate = 9600;
+        dlg.baudrate = 115200;
         dlg.parity   = QSerialPort::NoParity;
 
         int ret = dlg.exec();
@@ -490,6 +565,8 @@ void MainWindow::on_actionSerialPort_triggered()
                 dlink->setup_port(dlg.port,dlg.baudrate,dlg.parity);
                 ui->actionSerialPort->setText(dlg.port);
 
+                //ui->statusBar->
+
                 ui->statusBar->addPermanentWidget(StartButton);
                 ui->statusBar->addPermanentWidget(StopButton);
                 ui->statusBar->addPermanentWidget(BackButton);
@@ -497,7 +574,17 @@ void MainWindow::on_actionSerialPort_triggered()
                 ui->statusBar->addPermanentWidget(TestComBox);
                 ui->statusBar->addPermanentWidget(TestButton);
 
-                ui->statusBar->adjustSize();
+                /*
+                StartButton->resize(50,20);
+                StopButton->resize(50,20);
+                BackButton->resize(50,20);
+
+                TestComBox->resize(50,20);
+                TestButton->resize(50,20);
+                */
+
+
+                //ui->statusBar->adjustSize();
 
                 connect(StartButton,SIGNAL(clicked(bool)),
                         this,SLOT(StartMission_Clicked(bool)));
@@ -868,6 +955,20 @@ void MainWindow::WayPointSendStatuBar(int32_t Value)
 
 void MainWindow::updateInspector(void)
 {
+
+    //判断是否进入调试
+    if((dlink->vehicle.Satuts.isDebug == 0x01)&&(isSimuOld == 0))
+    {
+        dlink->SimuStart();
+    }
+    else if((dlink->vehicle.Satuts.isDebug == 0x00)&&(isSimuOld == 0x01))
+    {
+        dlink->SimuStop();
+    }
+
+    isSimuOld = dlink->vehicle.Satuts.isDebug;
+
+
     //更新地图上的显示
 
     map->UAV->SetUAVHeading(dlink->vehicle.GPS.course);
@@ -908,7 +1009,7 @@ void MainWindow::updateInspector(void)
     str.append(tr("Satuts.dis2wp:") + QString::number(dlink->vehicle.Satuts.dis2wp) + tr("\n"));
     str.append(tr("Satuts.detaP:") + QString::number(dlink->vehicle.Satuts.detaP) + tr("\n"));
     str.append(tr("Satuts.gyroZ:") + QString::number(dlink->vehicle.Satuts.gyroZ) + tr("\n"));
-
+    str.append(tr("Satuts.isDebug:") + QString::number(dlink->vehicle.Satuts.isDebug) + tr("\n"));
     if(inspector)
        inspector->setString(str);
 

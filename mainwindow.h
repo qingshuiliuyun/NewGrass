@@ -39,6 +39,9 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event);
 
 
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+
 signals:
 
 
@@ -108,6 +111,9 @@ private:
 
     uint8_t isCanCreatePoint = 0;
     uint8_t isCanUseRule = 0;
+
+    uint8_t isSimuOld = 0;
+
 
 
 

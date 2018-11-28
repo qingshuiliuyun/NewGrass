@@ -24,10 +24,23 @@ DLink::DLink(QObject *parent) : QObject(parent)
     connect(WayPointTimer,SIGNAL(timeout()),
             this,SLOT(WayPointTimeOut()));
 
+
+    SimuTimer = new QTimer();
+    connect(SimuTimer,SIGNAL(timeout()),
+            this,SLOT(SimuTimerTimeOut()));
+
 }
 
 DLink::~DLink()
 {
+    WayPointTimer->stop();
+    delete WayPointTimer;
+    WayPointTimer = NULL;
+
+    SimuTimer->stop();
+    delete SimuTimer;
+    SimuTimer = NULL;
+
     if (serialPort)
     {
         serialPort->close();
@@ -238,8 +251,8 @@ void DLink::R_Decode(QByteArray data)
               data = data.mid(7);
               memcpy(&vehicle.GPS,data,dframe.LEN-9);//从第7个复制
 
-              qDebug() << vehicle.GPS.fixtype
-                       <<vehicle.GPS.latitude ;
+              //qDebug() << vehicle.GPS.fixtype
+              //         <<vehicle.GPS.latitude ;
 
               //qDebug() << "recieve gps";
               emit dlinkUpdate();
@@ -483,8 +496,59 @@ void DLink::WayPointAppend(Mission::_waypoint point)
 }
 
 
+void DLink::SendSimu(void)
+{
+    union{uint8_t B[2];uint16_t D;}src;
+    char  DataToSend[100];
+    uint16_t DataCount = 0;
+
+    DataToSend[DataCount++] = 0xEB;
+    DataToSend[DataCount++] = 0x90;
+
+    src.D = 0x0021;
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    DataToSend[DataCount++] = vehicle.U2.txsyn++;
+
+    src.D = sizeof(vehicle.SIM);
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    memcpy(DataToSend + DataCount,&vehicle.SIM,sizeof(vehicle.SIM));
+    DataCount += sizeof(vehicle.SIM);
+
+    src.D = CRC_CheckSum((uint8_t *)DataToSend,DataCount);
+    DataToSend[DataCount++] = src.B[0];
+    DataToSend[DataCount++] = src.B[1];
+
+    if(serialPort)
+    {
+       serialPort->write(DataToSend,DataCount);
+       //qInfo() << "send simu";
+    }
+    else
+    {
+        qInfo() << "Please Open SerialPort first";
+    }
+}
 
 
+void DLink::SimuStart(void)
+{
+    qDebug() << "start simu 5hz";
+    SimuTimer->start(200);//5hz
+}
 
+void DLink::SimuStop(void)
+{
+    qDebug() << "stop simu";
+    SimuTimer->stop();
+}
 
+void DLink::SimuTimerTimeOut(void)
+{
+    //qDebug() << "into simu";
+    SendSimu();
+}
 

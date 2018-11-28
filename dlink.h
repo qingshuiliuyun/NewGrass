@@ -117,6 +117,7 @@ public:
         float detaP;
         float gyroZ;
 
+        bool isDebug;
     }_status;
 
 
@@ -171,6 +172,7 @@ public:
         _heardbeat HeardBeat;
         _parameter Parameter;
         _gps GPS;
+        _gps SIM;//simulation point
         _ultrasonic Ultrasonic;
         Mission::_waypoint WayPoint;
         _status Satuts;
@@ -205,6 +207,10 @@ public:
 
     void WayPointClear();
     void WayPointAppend(Mission::_waypoint point);
+
+    void SendSimu(void);
+    void SimuStart(void);
+    void SimuStop(void);
 
 
     _vehicle vehicle;
@@ -252,6 +258,9 @@ public slots:
 
     void SendWayPointThread(void);
 
+    void SimuTimerTimeOut(void);
+
+
 private:
     QSerialPort *serialPort = nullptr;
 
@@ -262,6 +271,8 @@ private:
 
 
     int SendWayPointCount = 0;
+
+    QTimer *SimuTimer = nullptr;
 
 
 };
