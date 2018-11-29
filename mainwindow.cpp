@@ -371,11 +371,15 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
 
             }
         }break;
-    case Qt::MidButton:{
+        case Qt::MidButton:{
 
             map->UAV->DeleteTrail();
 
         }break;
+    case Qt::RightButton:{
+            qDebug() << "RightButton";
+        }break;
+
     }
 }
 
@@ -1010,6 +1014,21 @@ void MainWindow::updateInspector(void)
     str.append(tr("Satuts.detaP:") + QString::number(dlink->vehicle.Satuts.detaP) + tr("\n"));
     str.append(tr("Satuts.gyroZ:") + QString::number(dlink->vehicle.Satuts.gyroZ) + tr("\n"));
     str.append(tr("Satuts.isDebug:") + QString::number(dlink->vehicle.Satuts.isDebug) + tr("\n"));
+    str.append(tr("Par.speed_p:") + QString::number(dlink->vehicle.Par.speed_p) + tr("\n"));
+    str.append(tr("Par.speed_i:") + QString::number(dlink->vehicle.Par.speed_i) + tr("\n"));
+    str.append(tr("Par.speed_d:") + QString::number(dlink->vehicle.Par.speed_d) + tr("\n"));
+    str.append(tr("Par.speed_o:") + QString::number(dlink->vehicle.Par.speed_o) + tr("\n"));
+    str.append(tr("Par.position_p:") + QString::number(dlink->vehicle.Par.position_p) + tr("\n"));
+    str.append(tr("Par.position_i:") + QString::number(dlink->vehicle.Par.position_i) + tr("\n"));
+    str.append(tr("Par.position_d:") + QString::number(dlink->vehicle.Par.position_d) + tr("\n"));
+    str.append(tr("Par.position_o:") + QString::number(dlink->vehicle.Par.position_o) + tr("\n"));
+    str.append(tr("Par.heading_p:") + QString::number(dlink->vehicle.Par.heading_p) + tr("\n"));
+    str.append(tr("Par.heading_i:") + QString::number(dlink->vehicle.Par.heading_i) + tr("\n"));
+    str.append(tr("Par.heading_d:") + QString::number(dlink->vehicle.Par.heading_d) + tr("\n"));
+    str.append(tr("Par.heading_o:") + QString::number(dlink->vehicle.Par.heading_o) + tr("\n"));
+
+
+
     if(inspector)
        inspector->setString(str);
 

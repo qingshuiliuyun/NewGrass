@@ -291,6 +291,15 @@ void DLink::R_Decode(QByteArray data)
          {
               data = data.mid(7);
               memcpy(&vehicle.Satuts,data,dframe.LEN-9);//从第7个复制
+              qDebug() << "ID:50";
+              emit dlinkUpdate();
+         }break;
+
+         case 0x0051://Par
+         {
+              data = data.mid(7);
+              memcpy(&vehicle.Par,data,dframe.LEN-9);//从第7个复制
+              qDebug() << "ID:51";
               emit dlinkUpdate();
          }break;
      }

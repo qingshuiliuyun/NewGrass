@@ -120,7 +120,24 @@ public:
         bool isDebug;
     }_status;
 
+    typedef struct {
+            float speed_p;
+          float speed_i;
+          float speed_d;
+            float speed_o;
 
+            float position_p;
+          float position_i;
+          float position_d;
+            float position_o;
+
+          float heading_p;
+          float heading_i;
+          float heading_d;
+            float heading_o;
+
+
+    }_par;
 
     typedef struct {
 
@@ -176,6 +193,7 @@ public:
         _ultrasonic Ultrasonic;
         Mission::_waypoint WayPoint;
         _status Satuts;
+        _par Par;
         _cmd CMD;
 
 
