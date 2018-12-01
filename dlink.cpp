@@ -48,7 +48,35 @@ DLink::~DLink()
         serialPort = NULL;
     }
 
+    if(LogFile)
+    {
+        LogFile->close();
+        delete LogFile;
+        LogFile = NULL;
+    }
+
 }
+
+
+
+void DLink::StartRecord(void)
+{
+    if (LogFile)
+    {
+        LogFile->close();
+        delete LogFile;
+    }
+    QDateTime current = QDateTime::currentDateTime();
+    LogFile = new QFile(QString("./log/%1.log").arg(current.toString("yyyyMMddHHmmss")));
+    LogFile->open(QIODevice::WriteOnly);
+}
+
+void DLink::RecordReplay(void)
+{
+
+}
+
+
 
 
 void DLink::setup_port(const QString port, qint32 baudrate, QSerialPort::Parity parity)
@@ -62,6 +90,8 @@ void DLink::setup_port(const QString port, qint32 baudrate, QSerialPort::Parity 
 
     if (serialPort->open(QIODevice::ReadWrite))
     {
+        StartRecord();
+
         serialPort->setBaudRate(baudrate);
         serialPort->setParity(parity);
         serialPort->setDataBits(QSerialPort::Data8);
@@ -86,6 +116,11 @@ void DLink::stop_port()
     serialPort->close();
     delete serialPort;
     serialPort = NULL;
+
+    LogFile->close();
+    delete LogFile;
+    LogFile = NULL;
+
 }
 
 uint16_t DLink::CRC_CheckSum (uint8_t *pBuffer,uint8_t Size)
@@ -123,7 +158,7 @@ void DLink::readPendingDatagrams(void)
     }
     QByteArray datagram = serialPort->readAll();
 
-    //qDebug() << datagram;
+    LogFile->write(datagram);
 
     SerialData.append(datagram);
     while(SerialData.contains(Fstart))

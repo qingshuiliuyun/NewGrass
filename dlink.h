@@ -215,6 +215,9 @@ public:
     bool state_port();
     void stop_port();
 
+    void StartRecord(void);
+    void RecordReplay(void);
+
     uint16_t CRC_CheckSum (uint8_t *pBuffer,uint8_t Size);
 
     void R_Decode(QByteArray data);
@@ -229,6 +232,7 @@ public:
     void SendSimu(void);
     void SimuStart(void);
     void SimuStop(void);
+
 
 
     _vehicle vehicle;
@@ -262,6 +266,8 @@ signals:
    void SendWaypoint(int32_t);
 
 
+
+
 public slots:
     void readPendingDatagrams(void);
 
@@ -292,7 +298,7 @@ private:
 
     QTimer *SimuTimer = nullptr;
 
-
+    QFile *LogFile = NULL;
 };
 
 #endif // DLINK_H
