@@ -121,13 +121,6 @@ MainWindow::MainWindow(QWidget *parent) :
     map->update();
     delete ini;
 
-
-
-
-
-
-
-
     connect(map,SIGNAL(MouseDoubleClickEvent(QMouseEvent*)),
             this,SLOT(CreateWayPoint(QMouseEvent*)));
 
@@ -276,6 +269,14 @@ void MainWindow::keyPressEvent(QKeyEvent *event)   //键盘按下事件
         case Qt::Key_W:
          dlink->vehicle.SIM.groundspeed +=0.1f;
         break;
+        case Qt::Key_K :
+        {
+            if(event->modifiers() == Qt::ControlModifier)
+            {
+              qInfo() << "ctrl +K";
+              dlink->SendCMD(0x06,0x06);//停止
+            }
+        }
     }
 
 
@@ -422,8 +423,11 @@ void MainWindow::PointPosChange(internals::PointLatLng p, int number)
     point.speed = PointList.at(number).speed;
     point.course = PointList.at(number).course;
 
-    if(isCanCreatePoint == 0x01)
+    if(dlink->vehicle.Satuts.isDebug != 0x01)
     {
+
+        qDebug() << "pos change :" << number;
+
         PointList.replace(number,point);
 
         if(MissionWgt)
@@ -635,8 +639,6 @@ void MainWindow::on_actionMission_triggered()
 
         connect(MissionWgt,SIGNAL(clearInside()),
                 this,SLOT(ClearInsidePoint()));
-
-
 
     }
     else

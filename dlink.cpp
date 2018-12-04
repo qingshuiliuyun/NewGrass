@@ -61,6 +61,14 @@ DLink::~DLink()
 
 void DLink::StartRecord(void)
 {
+
+    QDir *temp = new QDir;
+    if(!temp->exists("./log"))
+    {
+        qDebug() << "make dir log";
+        temp->mkdir("./log");
+    }
+
     if (LogFile)
     {
         LogFile->close();
@@ -103,6 +111,13 @@ void DLink::setup_port(const QString port, qint32 baudrate, QSerialPort::Parity 
     {
         delete serialPort;
         serialPort = NULL;
+
+        if(LogFile)
+        {
+            LogFile->close();
+            delete LogFile;
+            LogFile = NULL;
+        }
     }
 }
 
@@ -158,6 +173,7 @@ void DLink::readPendingDatagrams(void)
     }
     QByteArray datagram = serialPort->readAll();
 
+    if(LogFile)
     LogFile->write(datagram);
 
     SerialData.append(datagram);
@@ -326,7 +342,7 @@ void DLink::R_Decode(QByteArray data)
          {
               data = data.mid(7);
               memcpy(&vehicle.Satuts,data,dframe.LEN-9);//从第7个复制
-              qDebug() << "ID:50";
+              //qDebug() << "ID:50";
               emit dlinkUpdate();
          }break;
 
@@ -334,7 +350,7 @@ void DLink::R_Decode(QByteArray data)
          {
               data = data.mid(7);
               memcpy(&vehicle.Par,data,dframe.LEN-9);//从第7个复制
-              qDebug() << "ID:51";
+              //qDebug() << "ID:51";
               emit dlinkUpdate();
          }break;
      }
@@ -470,6 +486,7 @@ void DLink::SendWayPoint(void)
 
     if(serialPort)
     {
+       qDebug() << vehicle.WayPoint.id;
        serialPort->write(DataToSend,DataCount);
     }
     else
@@ -483,9 +500,10 @@ void DLink::SendWayPointThread(void)
 {
     if(waypointlist.size() > 0)
     {
-        WayPointTimer->start(100);//100ms一个航点
+        WayPointTimer->start(500);//100ms一个航点
 
         //初始化第一个航点以及发送标志
+        isSendWayPointCompelet = false;
         SendWayPointCount = 0;
         vehicle.WayPoint = waypointlist.at(SendWayPointCount);
     }

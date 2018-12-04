@@ -9,7 +9,7 @@
 #include "QFile"
 #include "QDateTime"
 #include "QTimer"
-
+#include "QDir"
 #include "Mission/mission.h"
 
 
