@@ -29,6 +29,10 @@ DLink::DLink(QObject *parent) : QObject(parent)
     connect(SimuTimer,SIGNAL(timeout()),
             this,SLOT(SimuTimerTimeOut()));
 
+    DataTimer = new QTimer();
+    connect(DataTimer,SIGNAL(timeout()),
+            this,SLOT(DataTimerTimeOut()));
+
 }
 
 DLink::~DLink()
@@ -99,6 +103,8 @@ void DLink::setup_port(const QString port, qint32 baudrate, QSerialPort::Parity 
     if (serialPort->open(QIODevice::ReadWrite))
     {
         StartRecord();
+
+        DataTimer->start(1000);
 
         serialPort->setBaudRate(baudrate);
         serialPort->setParity(parity);
@@ -172,6 +178,8 @@ void DLink::readPendingDatagrams(void)
         SerialData.clear();
     }
     QByteArray datagram = serialPort->readAll();
+
+    vehicle.ReceiveCount += datagram.size();
 
     if(LogFile)
     LogFile->write(datagram);
@@ -613,4 +621,16 @@ void DLink::SimuTimerTimeOut(void)
     //qDebug() << "into simu";
     SendSimu();
 }
+
+void DLink::DataTimerTimeOut(void)
+{
+    vehicle.ReceiveHz = vehicle.ReceiveCount;
+    vehicle.ReceiveCount = 0;
+}
+
+
+
+
+
+
 

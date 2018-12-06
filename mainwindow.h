@@ -52,7 +52,7 @@ private slots:
     void ChangeParameter(void);
     void ParameterFlush(void);
     void SendWayPoint(QList<Mission::_waypoint> list);
-
+    void ChangePoint(QList<Mission::_waypoint> p);
     void flushWayPoint(void);
     void RecievePoint(Mission::_waypoint p);
 

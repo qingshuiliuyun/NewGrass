@@ -200,6 +200,11 @@ public:
         _uart U1;
         _uart U2;
 
+
+
+        uint32_t ReceiveCount;
+        uint32_t ReceiveHz;
+
     }_vehicle;
 
 
@@ -284,6 +289,7 @@ public slots:
 
     void SimuTimerTimeOut(void);
 
+    void DataTimerTimeOut(void);
 
 private:
     QSerialPort *serialPort = nullptr;
@@ -292,7 +298,7 @@ private:
     QFile *InfoLogFile = nullptr;
 
     QTimer *WayPointTimer = nullptr;
-
+    QTimer *DataTimer = nullptr;
 
     int SendWayPointCount = 0;
 

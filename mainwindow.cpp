@@ -277,6 +277,33 @@ void MainWindow::keyPressEvent(QKeyEvent *event)   //键盘按下事件
               dlink->SendCMD(0x06,0x06);//停止
             }
         }
+        break;
+        case Qt::Key_Space :
+        {
+            internals::PointLatLng LatLng;
+            LatLng.SetLat(dlink->vehicle.GPS.latitude);
+            LatLng.SetLng(dlink->vehicle.GPS.longitude);
+            map->SetCurrentPosition(LatLng);
+        }
+        break;
+        case Qt::Key_Equal :
+        {
+            map->SetZoom(map->ZoomReal() + 1);
+        }
+        break;
+        case Qt::Key_Minus:
+        {
+            map->SetZoom(map->ZoomReal() - 1);
+        }
+        break;
+        case Qt::Key_C:
+        {
+            if(event->modifiers() == Qt::AltModifier)
+            {
+                 map->UAV->DeleteTrail();
+            }
+        }
+        break;
     }
 
 
@@ -383,6 +410,15 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
 
     }
 }
+
+void MainWindow::ChangePoint(QList<Mission::_waypoint> p)
+{
+     PointList.clear();
+     PointList << p;
+     qDebug() << "change points";
+
+}
+
 
 void MainWindow::RecievePoint(Mission::_waypoint p)
 {
@@ -639,6 +675,9 @@ void MainWindow::on_actionMission_triggered()
 
         connect(MissionWgt,SIGNAL(clearInside()),
                 this,SLOT(ClearInsidePoint()));
+
+        connect(MissionWgt,SIGNAL(changePoints(QList<Mission::_waypoint>)),
+                this,SLOT(ChangePoint(QList<Mission::_waypoint>)));
 
     }
     else
@@ -986,8 +1025,7 @@ void MainWindow::updateInspector(void)
 
 
     //更新监视器
-    float frequency = 10;
-    QString str = QString("data inspector update in %1 Hz\n").arg(frequency);
+    QString str = QString("data recieve %1 Bps\n").arg(dlink->vehicle.ReceiveHz);
 
     str.append(tr("GPS.svn:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
     str.append(tr("GPS.fixtype:") + QString::number(dlink->vehicle.GPS.fixtype) + tr("\n"));
