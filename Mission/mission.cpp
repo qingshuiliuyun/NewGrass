@@ -416,3 +416,19 @@ void Mission::on_pushButton_clearInside_clicked()
 {
     emit clearInside();
 }
+
+void Mission::CreateAutoPoint(void)
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -19,7 +19,8 @@
 #include "inifile.h"
 #include "QPushButton"
 #include "QStatusBar"
-
+#include "QTextEdit"
+#include "QTextBrowser"
 namespace Ui {
 class MainWindow;
 }
@@ -44,7 +45,7 @@ protected:
 
 signals:
 
-
+    void log_p(QString);
 
 private slots:
     void CreateWayPoint(QMouseEvent *event);

@@ -2,7 +2,7 @@
 #define DLINKINSPECTOR_H
 
 #include <QWidget>
-
+#include "QTextBrowser"
 namespace Ui {
 class dlinkinspector;
 }
@@ -16,6 +16,13 @@ public:
     ~dlinkinspector();
 
     void setString(QString str);
+
+
+    void setTextBrowser(QTextBrowser *browser);
+
+    void setDebugInfo(QString str);
+
+    QTextBrowser *debuginfo;
 
 
 private:

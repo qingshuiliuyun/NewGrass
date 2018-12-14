@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
-    <height>422</height>
+    <width>641</width>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -88,9 +88,6 @@
        <item row="0" column="1">
         <widget class="QComboBox" name="comboBox_action"/>
        </item>
-       <item row="0" column="0">
-        <widget class="QComboBox" name="comboBox_type"/>
-       </item>
        <item row="1" column="0" colspan="2">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
@@ -120,6 +117,9 @@
          </item>
         </layout>
        </item>
+       <item row="0" column="0">
+        <widget class="QComboBox" name="comboBox_type"/>
+       </item>
        <item row="2" column="0" colspan="2">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
@@ -134,31 +134,6 @@
          </item>
          <item>
           <widget class="QPushButton" name="clear_Lat">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset>
-             <normaloff>../Parameter/error.png</normaloff>../Parameter/error.png</iconset>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="4" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Spd</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_Spd"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="clear_Spd">
            <property name="text">
             <string/>
            </property>
@@ -195,12 +170,30 @@
          </item>
         </layout>
        </item>
-       <item row="6" column="0">
-        <widget class="QPushButton" name="pushButton_ok">
-         <property name="text">
-          <string>OK</string>
-         </property>
-        </widget>
+       <item row="4" column="0" colspan="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Spd</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_Spd"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="clear_Spd">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>../Parameter/error.png</normaloff>../Parameter/error.png</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="5" column="0" colspan="2">
         <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -227,6 +220,20 @@
          </item>
         </layout>
        </item>
+       <item row="6" column="0">
+        <widget class="QPushButton" name="pushButton_ok">
+         <property name="text">
+          <string>OK</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QPushButton" name="pushButton_clearInside">
+         <property name="text">
+          <string>clearInside</string>
+         </property>
+        </widget>
+       </item>
        <item row="6" column="1">
         <widget class="QPushButton" name="pushButton_cancel">
          <property name="text">
@@ -248,13 +255,6 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="1">
-        <widget class="QPushButton" name="pushButton_clearInside">
-         <property name="text">
-          <string>clearInside</string>
-         </property>
-        </widget>
-       </item>
        <item row="7" column="0">
         <widget class="QPushButton" name="pushButton_download">
          <property name="text">
@@ -262,7 +262,7 @@
          </property>
         </widget>
        </item>
-       <item row="10" column="0" colspan="2">
+       <item row="12" column="0" colspan="2">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -275,6 +275,13 @@
          </property>
         </spacer>
        </item>
+       <item row="9" column="1">
+        <widget class="QPushButton" name="pushButton_SaveToFile">
+         <property name="text">
+          <string>SaveToFile</string>
+         </property>
+        </widget>
+       </item>
        <item row="9" column="0">
         <widget class="QPushButton" name="pushButton_LoadFromFile">
          <property name="text">
@@ -282,10 +289,66 @@
          </property>
         </widget>
        </item>
-       <item row="9" column="1">
-        <widget class="QPushButton" name="pushButton_SaveToFile">
+       <item row="11" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>GroupBox</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="2" column="1">
+           <widget class="QComboBox" name="comboBox">
+            <item>
+             <property name="text">
+              <string>0</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>StartPoint</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QPushButton" name="pushButton">
+            <property name="text">
+             <string>Create</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Spacing</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Angle</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+            <property name="maximum">
+             <double>360.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="10" column="0" colspan="2">
+        <widget class="QCheckBox" name="checkBox">
          <property name="text">
-          <string>SaveToFile</string>
+          <string>Auto Create WayPoint</string>
          </property>
         </widget>
        </item>

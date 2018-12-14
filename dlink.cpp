@@ -225,6 +225,10 @@ void DLink::readPendingDatagrams(void)
                 {
                     R_Decode(AFrame);
                 }
+                else
+                {
+                    qInfo() << "crc error";
+                }
         }
         else
         {

@@ -45,7 +45,7 @@ public:
     void SavePoint(void);
     void readPoint(void);
 
-
+    void CreateAutoPoint(void);
 
 public slots:
     void HeaderDoubleClicked(QModelIndex Index);
