@@ -277,7 +277,7 @@ void DLink::R_Decode(QByteArray data)
                        {
                            isSendWayPointCompelet = true;
 
-                           RecieveWaypoint(1);
+                           //RecieveWaypoint(1);
                            qDebug() << ID << Value << isSendWayPointCompelet;
 
                        }
@@ -498,7 +498,8 @@ void DLink::SendWayPoint(void)
 
     if(serialPort)
     {
-       qDebug() << vehicle.WayPoint.id;
+       qDebug() << "way point id:" << vehicle.WayPoint.id;
+       emit SendWaypointNum(vehicle.WayPoint.id);
        serialPort->write(DataToSend,DataCount);
     }
     else
@@ -537,7 +538,6 @@ void DLink::WayPointTimeOut(void)
             vehicle.WayPoint = waypointlist.at(SendWayPointCount);
             emit SendingWayPoint(waypointlist.size(),SendWayPointCount);
             SendWayPoint();//发送一个航点
-
         }
         else
         {
@@ -546,6 +546,8 @@ void DLink::WayPointTimeOut(void)
             SendCMD(0,0x08);
             SendWayPointCount = 0;
             WayPointTimer->stop();
+
+            emit SendWaypointNum(-1);
         }
     }
     else//未发送成功，那么继续发送当前航点
@@ -554,7 +556,7 @@ void DLink::WayPointTimeOut(void)
         SendWayPoint();//发送一个航点
     }
 
-    emit SendWaypoint(SendWayPointCount);
+
 
 
 }

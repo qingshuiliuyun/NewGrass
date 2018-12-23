@@ -112,11 +112,11 @@ MainWindow::MainWindow(QWidget *parent) :
             this,SLOT(RecievePoint(Mission::_waypoint)));
 
 
-    connect(dlink,SIGNAL(SendWaypoint(int32_t)),
+    connect(dlink,SIGNAL(SendWaypointNum(int32_t)),
             this,SLOT(WayPointSendStatuBar(int32_t)));
 
     connect(dlink,SIGNAL(RecieveWaypoint(int32_t)),
-            this,SLOT(WayPointSendStatuBar(int32_t)));
+            this,SLOT(WayPointRecieveStatuBar(int32_t)));
 
 
     connect(dlink,SIGNAL(dlinkUpdate()),
@@ -231,10 +231,27 @@ void MainWindow::keyPressEvent(QKeyEvent *event)   //键盘按下事件
             dlink->vehicle.SIM.course = 360 - dlink->vehicle.SIM.course;
        break;
        case Qt::Key_D:
-        dlink->vehicle.SIM.course +=1;
-        if(dlink->vehicle.SIM.course >= 360)
-            dlink->vehicle.SIM.course = dlink->vehicle.SIM.course - 360;
+
+        if(event->modifiers() == Qt::AltModifier)
+        {
+            qInfo() << "alt + D";
+            on_actionDownLoadWayPoint_triggered();//download
+        }
+        else
+        {
+            dlink->vehicle.SIM.course +=1;
+            if(dlink->vehicle.SIM.course >= 360)
+                dlink->vehicle.SIM.course = dlink->vehicle.SIM.course - 360;
+        }
        break;
+        case Qt::Key_U :
+        {
+            if(event->modifiers() == Qt::AltModifier)
+            {
+              qInfo() << "atl + U";
+              on_actionUploadWayPoint_triggered();//停止
+            }
+        }
         case Qt::Key_S:
          dlink->vehicle.SIM.groundspeed -=0.1f;
          if(dlink->vehicle.SIM.groundspeed < 0)
@@ -353,7 +370,7 @@ void MainWindow::CreateWayPoint(QMouseEvent *event)
                p.altitude = 0;
                p.latitude = point->Coord().Lat();
                p.longitude = point->Coord().Lng();
-               p.speed = 0.5;
+               p.speed = 1.0f;
                p.course = 0;
 
                PointList << p ;//把点保存起来
@@ -968,12 +985,26 @@ void MainWindow::TestButtonClicked(bool)
 
 void MainWindow::WayPointRecieveStatuBar(int32_t Value)
 {
-    ui->statusBar->showMessage(tr("recieve:") + QString::number(Value),10000);
+    if(Value >= 0)
+    {
+      ui->statusBar->showMessage(tr("recieve:") + QString::number(Value),10000);
+    }
+    else
+    {
+      ui->statusBar->showMessage(tr("recieve complete"));
+    }
 }
 
 void MainWindow::WayPointSendStatuBar(int32_t Value)
 {
-    ui->statusBar->showMessage(tr("send:") + QString::number(Value),10000);
+    if(Value >= 0)
+    {
+      ui->statusBar->showMessage(tr("send:") + QString::number(Value),10000);
+    }
+    else
+    {
+      ui->statusBar->showMessage(tr("send complete"));
+    }
 }
 
 

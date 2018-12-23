@@ -44,7 +44,7 @@ dlinkinspector::dlinkinspector(QWidget *parent) :
 
 
 
-   // qInstallMessageHandler(myMessageOutput);
+    //qInstallMessageHandler(myMessageOutput);
 
 
 

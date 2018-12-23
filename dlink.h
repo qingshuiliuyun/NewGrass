@@ -268,7 +268,7 @@ signals:
 
 
    void RecieveWaypoint(int32_t);
-   void SendWaypoint(int32_t);
+   void SendWaypointNum(int32_t);
 
 
 

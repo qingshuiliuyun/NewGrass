@@ -2,6 +2,8 @@
 #include "ui_mission.h"
 #include "QDebug"
 
+#include "geoposition.h"
+
 Mission::Mission(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Mission)
@@ -22,6 +24,7 @@ Mission::Mission(QWidget *parent) :
 
     connect(ui->treeWidget,SIGNAL(doubleClicked(QModelIndex)),
             this,SLOT(HeaderDoubleClicked(QModelIndex)));
+
 
 
 
@@ -422,13 +425,10 @@ void Mission::CreateAutoPoint(void)
 
 }
 
-
-
-
-
-
-
-
-
-
-
+void Mission::on_pushButton_CreateAutoPoint_clicked()
+{
+    GEOPosition *geo = new GEOPosition;
+    //geo->CreateWayPoint(WayPoint);
+    delete geo;
+    geo = NULL;
+}

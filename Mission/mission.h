@@ -81,6 +81,8 @@ private slots:
 
     void on_pushButton_clearInside_clicked();
 
+    void on_pushButton_CreateAutoPoint_clicked();
+
 private:
     Ui::Mission *ui;
 
