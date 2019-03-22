@@ -296,7 +296,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="2" column="1">
-           <widget class="QComboBox" name="comboBox">
+           <widget class="QComboBox" name="comboBox_StartPoint">
             <item>
              <property name="text">
               <string>0</string>
@@ -326,17 +326,20 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_Spacing"/>
           </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="text">
              <string>Angle</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_Angle">
             <property name="maximum">
              <double>360.000000000000000</double>
             </property>

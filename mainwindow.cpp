@@ -1,6 +1,41 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
+QTextEdit *log_te;
+QString t_log;
+void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QString msgstr;
+    QByteArray localMsg = msg.toLocal8Bit();
+    switch (type) {
+    case QtDebugMsg:
+        msgstr = QString::asprintf("Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    case QtInfoMsg:
+        msgstr = QString::asprintf("Info: %s\n", localMsg.constData());
+        break;
+    case QtWarningMsg:
+        msgstr = QString::asprintf("Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    case QtCriticalMsg:
+        msgstr = QString::asprintf("Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    case QtFatalMsg:
+        msgstr = QString::asprintf("Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+        break;
+    }
+
+    //setDebugInfo(msgstr);
+
+    log_te->append(msgstr);
+    QTextCursor cursor=log_te->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    log_te->setTextCursor(cursor);
+}
+
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -17,12 +52,14 @@ MainWindow::MainWindow(QWidget *parent) :
     h_StatusBar = new QStatusBar;
 
     //先安装调试输出句柄
+    //QTextEdit *log_te = new QTextEdit;
     //qInstallMessageHandler(myMessageOutput);
 
     //以下是UI
 
     ui->statusBar->resize(ui->statusBar->width(),20);
     ui->menuBar->addAction(ui->actionSerialPort);
+    ui->menuBar->addAction(ui->actionRTK);
     ui->menuBar->addAction(ui->actionInspector);
     ui->menuBar->addAction(ui->actionMission);
     ui->menuBar->addAction(ui->actionParameter);
@@ -1078,15 +1115,59 @@ void MainWindow::updateInspector(void)
     str.append(tr("Par.heading_d:") + QString::number(dlink->vehicle.Par.heading_d) + tr("\n"));
     str.append(tr("Par.heading_o:") + QString::number(dlink->vehicle.Par.heading_o) + tr("\n"));
 
-
-
     if(inspector)
        inspector->setString(str);
 
 }
 
+void MainWindow::on_actionRTK_triggered()
+{
+    if(dlink->state_RTKport())
+    {
+        disconnectdialog dlg(this);
+        dlg.setWindowTitle(tr("RTKPort"));
+        dlg.setWindowIcon(QIcon(":/img/FF.ico"));
+        int ret = dlg.exec();
+        if (QDialog::Accepted == ret)
+        {
+            dlink->stop_RTKport();
+            ui->actionRTK->setText(tr("RTKPort"));
 
+            disconnect(dlink,SIGNAL(RecieveRTK(QByteArray)),
+                    this,SLOT(updateDebugInfo(QByteArray)));
+        }
+    }
+    else
+    {
+        ConnectDialog dlg(this);
 
+        dlg.setWindowTitle(tr("RTKPort"));
+        dlg.setWindowIcon(QIcon(":/img/FF.ico"));
+
+        dlg.port = "COM1";
+        dlg.baudrate = 230400;
+        dlg.parity   = QSerialPort::NoParity;
+
+        int ret = dlg.exec();
+        if (QDialog::Accepted == ret)
+        {
+            if(dlg.port != "")//保证传回的串口号不为空
+            {
+                dlink->setup_RTKport(dlg.port,dlg.baudrate,dlg.parity);
+                ui->actionRTK->setText(dlg.port);
+
+                connect(dlink,SIGNAL(RecieveRTK(QByteArray)),
+                        this,SLOT(updateDebugInfo(QByteArray)));
+            }
+        }
+    }
+}
+
+void MainWindow::updateDebugInfo(QByteArray data)
+{
+  //  if(inspector)
+    //   inspector->setDebugInfo(data);
+}
 
 
 

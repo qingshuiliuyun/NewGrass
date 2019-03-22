@@ -220,6 +220,10 @@ public:
     bool state_port();
     void stop_port();
 
+    void setup_RTKport(const QString port, qint32 baudrate, QSerialPort::Parity parity);
+    bool state_RTKport();
+    void stop_RTKport();
+
     void StartRecord(void);
     void RecordReplay(void);
 
@@ -270,12 +274,12 @@ signals:
    void RecieveWaypoint(int32_t);
    void SendWaypointNum(int32_t);
 
-
+   void RecieveRTK(QByteArray data);
 
 
 public slots:
     void readPendingDatagrams(void);
-
+    void RTKreadPendingDatagrams(void);
     //发送
 
     void SendParameter(void);
@@ -293,6 +297,8 @@ public slots:
 
 private:
     QSerialPort *serialPort = nullptr;
+    QSerialPort *RTKPort = nullptr;
+
 
     QFile *FCCLogFile = nullptr;
     QFile *InfoLogFile = nullptr;

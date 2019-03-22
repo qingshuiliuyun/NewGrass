@@ -75,6 +75,11 @@
     <string>Inspector</string>
    </property>
   </action>
+  <action name="actionRTK">
+   <property name="text">
+    <string>RTK</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

@@ -52,6 +52,13 @@ DLink::~DLink()
         serialPort = NULL;
     }
 
+    if(RTKPort)
+    {
+        RTKPort->close();
+        delete RTKPort;
+        RTKPort = NULL;
+    }
+
     if(LogFile)
     {
         LogFile->close();
@@ -129,20 +136,60 @@ void DLink::setup_port(const QString port, qint32 baudrate, QSerialPort::Parity 
 
 bool DLink::state_port()
 {
-    return (serialPort != NULL)?(true):(false);
+    return (serialPort != nullptr)?(true):(false);
 }
 
 void DLink::stop_port()
 {
     serialPort->close();
     delete serialPort;
-    serialPort = NULL;
+    serialPort = nullptr;
 
     LogFile->close();
     delete LogFile;
-    LogFile = NULL;
+    LogFile = nullptr;
 
 }
+
+
+void DLink::setup_RTKport(const QString port, qint32 baudrate, QSerialPort::Parity parity)
+{
+    if (RTKPort)
+    {
+        RTKPort->close();
+        delete RTKPort;
+    }
+    RTKPort = new QSerialPort(port, this);
+
+    if (RTKPort->open(QIODevice::ReadWrite))
+    {
+        RTKPort->setBaudRate(baudrate);
+        RTKPort->setParity(parity);
+        RTKPort->setDataBits(QSerialPort::Data8);
+        RTKPort->setStopBits(QSerialPort::OneStop);
+
+        connect(RTKPort, &QSerialPort::readyRead, this, &DLink::RTKreadPendingDatagrams);
+    }
+    else
+    {
+        delete RTKPort;
+        RTKPort = nullptr;
+    }
+}
+
+bool DLink::state_RTKport()
+{
+    return (RTKPort != nullptr)?(true):(false);
+}
+
+void DLink::stop_RTKport()
+{
+    RTKPort->close();
+    delete RTKPort;
+    RTKPort = nullptr;
+}
+
+
 
 uint16_t DLink::CRC_CheckSum (uint8_t *pBuffer,uint8_t Size)
 {
@@ -170,15 +217,17 @@ uint16_t DLink::CRC_CheckSum (uint8_t *pBuffer,uint8_t Size)
 }
 
 //|EB 90|CIDL CIDH|SYN|LENL LENH|Payload|CKL CKH|
-QByteArray SerialData;
+
 void DLink::readPendingDatagrams(void)
 {
+    static QByteArray SerialData;
     if(SerialData.size()>40960000)//40MByte
     {
         SerialData.clear();
     }
     QByteArray datagram = serialPort->readAll();
 
+    qDebug() << datagram;
     vehicle.ReceiveCount += datagram.size();
 
     if(LogFile)
@@ -635,7 +684,54 @@ void DLink::DataTimerTimeOut(void)
 }
 
 
+void DLink::RTKreadPendingDatagrams(void)
+{
+     static QByteArray SerialData;
+    if(SerialData.size()>40960000)//40MByte
+    {
+        SerialData.clear();
+    }
+    QByteArray datagram = RTKPort->readAll();
+    //qDebug() << datagram;
 
+    emit RecieveRTK(datagram);
+
+    if(serialPort)
+    {
+
+        union{uint8_t B[2];uint16_t D;}src;
+        char  DataToSend[256+9];
+        uint16_t DataCount = 0;
+/*
+        DataToSend[DataCount++] = 0xEB;
+        DataToSend[DataCount++] = 0x90;
+
+        src.D = 0x0099;//RTK
+        DataToSend[DataCount++] = src.B[0];
+        DataToSend[DataCount++] = src.B[1];
+
+        DataToSend[DataCount++] = vehicle.U2.txsyn++;
+
+        src.D = datagram.size();
+        DataToSend[DataCount++] = src.B[0];
+        DataToSend[DataCount++] = src.B[1];
+*/
+        memcpy(DataToSend + DataCount,datagram.data(),datagram.size());
+        DataCount += datagram.size();
+/*
+        src.D = CRC_CheckSum((uint8_t *)DataToSend,DataCount);
+        DataToSend[DataCount++] = src.B[0];
+        DataToSend[DataCount++] = src.B[1];
+*/
+        serialPort->write(DataToSend,DataCount);
+    }
+    else
+    {
+        qInfo() << "Please Open SerialPort first";
+    }
+
+
+}
 
 
 

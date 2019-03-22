@@ -74,7 +74,7 @@ private slots:
     void WayPointRecieveStatuBar(int32_t Value);
     void WayPointSendStatuBar(int32_t Value);
 
-
+    void updateDebugInfo(QByteArray data);
 
     void on_actionSerialPort_triggered();
 
@@ -95,6 +95,8 @@ private slots:
     void on_actionUploadWayPoint_triggered();
 
     void on_actionInspector_triggered();
+
+    void on_actionRTK_triggered();
 
 private:
     Ui::MainWindow *ui = Q_NULLPTR;

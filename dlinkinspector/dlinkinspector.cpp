@@ -1,6 +1,7 @@
 #include "dlinkinspector.h"
 #include "ui_dlinkinspector.h"
 
+/*
 QTextEdit *log_te;
 QString t_log;
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -33,7 +34,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
     log_te->setTextCursor(cursor);
 }
 
-
+*/
 
 
 dlinkinspector::dlinkinspector(QWidget *parent) :

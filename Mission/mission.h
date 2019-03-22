@@ -11,6 +11,10 @@
 #include "QFileDialog"
 #include "QStringList"
 
+#include "wayLine.h"
+#include "polygonField.h"
+#include "calculateGeometry.h"
+
 namespace Ui {
 class Mission;
 }
@@ -89,6 +93,8 @@ private:
 
     bool isDoubleClicked = false;
 
+
+    QList <_waypoint> PolygonPoint;
 
 
 };
