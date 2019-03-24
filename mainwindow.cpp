@@ -86,14 +86,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     StrList << "SetHome"
             << "SetTarget"
-            << "leftfront-p"
-            << "leftfront-n"
-            << "leftback-p"
-            << "leftback-n"
-            << "rightfront-p"
-            << "rightfront-n"
-            << "rightback-p"
-            << "rightback-n"
+            << "left-p"
+            << "left-n"
+            << "right-p"
+            << "right-n"
             << "MotorReset"
             << "IntoDebug"
             << "OutofDebug";

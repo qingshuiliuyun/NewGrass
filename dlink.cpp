@@ -702,7 +702,7 @@ void DLink::RTKreadPendingDatagrams(void)
         union{uint8_t B[2];uint16_t D;}src;
         char  DataToSend[256+9];
         uint16_t DataCount = 0;
-/*
+
         DataToSend[DataCount++] = 0xEB;
         DataToSend[DataCount++] = 0x90;
 
@@ -715,14 +715,14 @@ void DLink::RTKreadPendingDatagrams(void)
         src.D = datagram.size();
         DataToSend[DataCount++] = src.B[0];
         DataToSend[DataCount++] = src.B[1];
-*/
+
         memcpy(DataToSend + DataCount,datagram.data(),datagram.size());
         DataCount += datagram.size();
-/*
+
         src.D = CRC_CheckSum((uint8_t *)DataToSend,DataCount);
         DataToSend[DataCount++] = src.B[0];
         DataToSend[DataCount++] = src.B[1];
-*/
+
         serialPort->write(DataToSend,DataCount);
     }
     else
