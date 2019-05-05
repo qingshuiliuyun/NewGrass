@@ -354,10 +354,6 @@ void MainWindow::mousePressEvent(QMouseEvent* event)
     LatLng.SetLng(map->currentMousePosition().Lng());
     ui->statusBar->showMessage(map->currentMousePosition().ToString(),10000);
 
-
-
-
-
 }
 
 
@@ -525,8 +521,8 @@ void MainWindow::on_actionInspector_triggered()
         inspector->show();
 
 
-        connect(dlink,SIGNAL(dlinkUpdate()),
-                this,SLOT(updateInspector()));
+        //connect(dlink,SIGNAL(dlinkUpdate()),
+        //        this,SLOT(updateInspector()));
 
         //inspector->setTextBrowser(log_te);
 
@@ -535,7 +531,7 @@ void MainWindow::on_actionInspector_triggered()
 
 
 
-        updateInspector();
+        //updateInspector();
 
     }
     else
@@ -628,7 +624,7 @@ void MainWindow::on_actionSerialPort_triggered()
         dlg.setWindowIcon(QIcon(":/img/FF.ico"));
 
         dlg.port = "COM1";
-        dlg.baudrate = 115200;
+        dlg.baudrate = 57600;
         dlg.parity   = QSerialPort::NoParity;
 
         int ret = dlg.exec();
@@ -1048,11 +1044,11 @@ void MainWindow::updateInspector(void)
     //判断是否进入调试
     if((dlink->vehicle.Satuts.isDebug == 0x01)&&(isSimuOld == 0))
     {
-        dlink->SimuStart();
+        //dlink->SimuStart();
     }
     else if((dlink->vehicle.Satuts.isDebug == 0x00)&&(isSimuOld == 0x01))
     {
-        dlink->SimuStop();
+        //dlink->SimuStop();
     }
 
     isSimuOld = dlink->vehicle.Satuts.isDebug;
@@ -1069,47 +1065,54 @@ void MainWindow::updateInspector(void)
 
 
     //更新监视器
-    QString str = QString("data recieve %1 Bps\n").arg(dlink->vehicle.ReceiveHz);
+    QString str = QString("data recieve %1 Bps\tdata transmit %2 Bps \n").arg(dlink->vehicle.ReceiveHz).arg(dlink->SerialPortTx_Hz);
 
-    str.append(tr("GPS.svn:") + QString::number(dlink->vehicle.GPS.svn) + tr("\n"));
-    str.append(tr("GPS.fixtype:") + QString::number(dlink->vehicle.GPS.fixtype) + tr("\n"));
-    str.append(tr("GPS.altitude:") + QString::number(dlink->vehicle.GPS.altitude) + tr("\n"));
-    str.append(tr("GPS.latitude:") + QString::number(dlink->vehicle.GPS.latitude,'f',8) + tr("\n"));
-    str.append(tr("GPS.longitude:") + QString::number(dlink->vehicle.GPS.longitude,'f',8) + tr("\n"));
-    str.append(tr("GPS.groundspeed:") + QString::number(dlink->vehicle.GPS.groundspeed) + tr("\n"));
-    str.append(tr("GPS.course:") + QString::number(dlink->vehicle.GPS.course) + tr("\n"));
-    str.append(tr("Ultrasonic.front:") + QString::number(dlink->vehicle.Ultrasonic.front) + tr("\n"));
-    str.append(tr("Ultrasonic.left:") + QString::number(dlink->vehicle.Ultrasonic.left) + tr("\n"));
-    str.append(tr("Ultrasonic.right:") + QString::number(dlink->vehicle.Ultrasonic.right) + tr("\n"));
+    str.append(tr("GPS.svn:") + QString::number(dlink->vehicle.GPS.svn) + tr("\t"));
+    str.append(tr("fixtype:") + QString::number(dlink->vehicle.GPS.fixtype) + tr("\t"));
+    str.append(tr("altitude:") + QString::number(dlink->vehicle.GPS.altitude) + tr("\t"));
+    str.append(tr("latitude:") + QString::number(dlink->vehicle.GPS.latitude,'f',8) + tr("\t"));
+    str.append(tr("longitude:") + QString::number(dlink->vehicle.GPS.longitude,'f',8) + tr("\t"));
+    str.append(tr("groundspeed:") + QString::number(dlink->vehicle.GPS.groundspeed) + tr("\t"));
+    str.append(tr("course:") + QString::number(dlink->vehicle.GPS.course) + tr("\n"));
+    str.append(tr("RTK.svn:") + QString::number(dlink->vehicle.RTK.svn) + tr("\t"));
+    str.append(tr("fixtype:") + QString::number(dlink->vehicle.RTK.fixtype) + tr("\t"));
+    str.append(tr("altitude:") + QString::number(dlink->vehicle.RTK.altitude) + tr("\t"));
+    str.append(tr("latitude:") + QString::number(dlink->vehicle.RTK.latitude,'f',8) + tr("\t"));
+    str.append(tr("longitude:") + QString::number(dlink->vehicle.RTK.longitude,'f',8) + tr("\t"));
+    str.append(tr("groundspeed:") + QString::number(dlink->vehicle.RTK.groundspeed) + tr("\t"));
+    str.append(tr("course:") + QString::number(dlink->vehicle.RTK.course) + tr("\n"));
+    str.append(tr("Ultrasonic.front:") + QString::number(dlink->vehicle.Ultrasonic.front) + tr("\t"));
+    str.append(tr("left:") + QString::number(dlink->vehicle.Ultrasonic.left) + tr("\t"));
+    str.append(tr("right:") + QString::number(dlink->vehicle.Ultrasonic.right) + tr("\n"));
     str.append(tr("Satuts.currentwaypoint:") + QString::number(dlink->vehicle.Satuts.currentwaypoint) + tr("\n"));
-    str.append(tr("Satuts.voltage1:") + QString::number(dlink->vehicle.Satuts.voltage1) + tr("\n"));
-    str.append(tr("Satuts.voltage2:") + QString::number(dlink->vehicle.Satuts.voltage2) + tr("\n"));
-    str.append(tr("Satuts.voltage3:") + QString::number(dlink->vehicle.Satuts.voltage3) + tr("\n"));
-    str.append(tr("Satuts.voltage4:") + QString::number(dlink->vehicle.Satuts.voltage4) + tr("\n"));
-    str.append(tr("Satuts.leftfront_p:") + QString::number(dlink->vehicle.Satuts.leftfront_p) + tr("\n"));
-    str.append(tr("Satuts.leftfront_n:") + QString::number(dlink->vehicle.Satuts.leftfront_n) + tr("\n"));
-    str.append(tr("Satuts.leftback_p:") + QString::number(dlink->vehicle.Satuts.leftback_p) + tr("\n"));
-    str.append(tr("Satuts.leftback_n:") + QString::number(dlink->vehicle.Satuts.leftback_n) + tr("\n"));
-    str.append(tr("Satuts.rightfront_p:") + QString::number(dlink->vehicle.Satuts.rightfront_p) + tr("\n"));
-    str.append(tr("Satuts.rightfront_n:") + QString::number(dlink->vehicle.Satuts.rightfront_n) + tr("\n"));
-    str.append(tr("Satuts.rightback_p:") + QString::number(dlink->vehicle.Satuts.rightback_p) + tr("\n"));
-    str.append(tr("Satuts.rightback_n:") + QString::number(dlink->vehicle.Satuts.rightback_n) + tr("\n"));
+    str.append(tr("Satuts.voltage1:") + QString::number(dlink->vehicle.Satuts.voltage1) + tr("\t"));
+    str.append(tr("voltage2:") + QString::number(dlink->vehicle.Satuts.voltage2) + tr("\t"));
+    str.append(tr("voltage3:") + QString::number(dlink->vehicle.Satuts.voltage3) + tr("\t"));
+    str.append(tr("voltage4:") + QString::number(dlink->vehicle.Satuts.voltage4) + tr("\n"));
+    str.append(tr("Satuts.leftfront_p:") + QString::number(dlink->vehicle.Satuts.leftfront_p) + tr("\t"));
+    str.append(tr("leftfront_n:") + QString::number(dlink->vehicle.Satuts.leftfront_n) + tr("\n"));
+    str.append(tr("Satuts.leftback_p:") + QString::number(dlink->vehicle.Satuts.leftback_p) + tr("\t"));
+    str.append(tr("leftback_n:") + QString::number(dlink->vehicle.Satuts.leftback_n) + tr("\n"));
+    str.append(tr("Satuts.rightfront_p:") + QString::number(dlink->vehicle.Satuts.rightfront_p) + tr("\t"));
+    str.append(tr("rightfront_n:") + QString::number(dlink->vehicle.Satuts.rightfront_n) + tr("\n"));
+    str.append(tr("Satuts.rightback_p:") + QString::number(dlink->vehicle.Satuts.rightback_p) + tr("\t"));
+    str.append(tr("rightback_n:") + QString::number(dlink->vehicle.Satuts.rightback_n) + tr("\n"));
     str.append(tr("Satuts.dis2wp:") + QString::number(dlink->vehicle.Satuts.dis2wp) + tr("\n"));
     str.append(tr("Satuts.detaP:") + QString::number(dlink->vehicle.Satuts.detaP) + tr("\n"));
     str.append(tr("Satuts.gyroZ:") + QString::number(dlink->vehicle.Satuts.gyroZ) + tr("\n"));
     str.append(tr("Satuts.isDebug:") + QString::number(dlink->vehicle.Satuts.isDebug) + tr("\n"));
-    str.append(tr("Par.speed_p:") + QString::number(dlink->vehicle.Par.speed_p) + tr("\n"));
-    str.append(tr("Par.speed_i:") + QString::number(dlink->vehicle.Par.speed_i) + tr("\n"));
-    str.append(tr("Par.speed_d:") + QString::number(dlink->vehicle.Par.speed_d) + tr("\n"));
-    str.append(tr("Par.speed_o:") + QString::number(dlink->vehicle.Par.speed_o) + tr("\n"));
-    str.append(tr("Par.position_p:") + QString::number(dlink->vehicle.Par.position_p) + tr("\n"));
-    str.append(tr("Par.position_i:") + QString::number(dlink->vehicle.Par.position_i) + tr("\n"));
-    str.append(tr("Par.position_d:") + QString::number(dlink->vehicle.Par.position_d) + tr("\n"));
-    str.append(tr("Par.position_o:") + QString::number(dlink->vehicle.Par.position_o) + tr("\n"));
-    str.append(tr("Par.heading_p:") + QString::number(dlink->vehicle.Par.heading_p) + tr("\n"));
-    str.append(tr("Par.heading_i:") + QString::number(dlink->vehicle.Par.heading_i) + tr("\n"));
-    str.append(tr("Par.heading_d:") + QString::number(dlink->vehicle.Par.heading_d) + tr("\n"));
-    str.append(tr("Par.heading_o:") + QString::number(dlink->vehicle.Par.heading_o) + tr("\n"));
+    str.append(tr("Par.speed_p:") + QString::number(dlink->vehicle.Par.speed_p) + tr("\t"));
+    str.append(tr("speed_i:") + QString::number(dlink->vehicle.Par.speed_i) + tr("\t"));
+    str.append(tr("speed_d:") + QString::number(dlink->vehicle.Par.speed_d) + tr("\t"));
+    str.append(tr("speed_o:") + QString::number(dlink->vehicle.Par.speed_o) + tr("\n"));
+    str.append(tr("Par.position_p:") + QString::number(dlink->vehicle.Par.position_p) + tr("\t"));
+    str.append(tr("position_i:") + QString::number(dlink->vehicle.Par.position_i) + tr("\t"));
+    str.append(tr("position_d:") + QString::number(dlink->vehicle.Par.position_d) + tr("\t"));
+    str.append(tr("position_o:") + QString::number(dlink->vehicle.Par.position_o) + tr("\n"));
+    str.append(tr("Par.heading_p:") + QString::number(dlink->vehicle.Par.heading_p) + tr("\t"));
+    str.append(tr("heading_i:") + QString::number(dlink->vehicle.Par.heading_i) + tr("\t"));
+    str.append(tr("heading_d:") + QString::number(dlink->vehicle.Par.heading_d) + tr("\t"));
+    str.append(tr("heading_o:") + QString::number(dlink->vehicle.Par.heading_o) + tr("\n"));
 
     if(inspector)
        inspector->setString(str);
@@ -1141,7 +1144,7 @@ void MainWindow::on_actionRTK_triggered()
         dlg.setWindowIcon(QIcon(":/img/FF.ico"));
 
         dlg.port = "COM1";
-        dlg.baudrate = 230400;
+        dlg.baudrate = 115200;
         dlg.parity   = QSerialPort::NoParity;
 
         int ret = dlg.exec();
@@ -1152,8 +1155,8 @@ void MainWindow::on_actionRTK_triggered()
                 dlink->setup_RTKport(dlg.port,dlg.baudrate,dlg.parity);
                 ui->actionRTK->setText(dlg.port);
 
-                connect(dlink,SIGNAL(RecieveRTK(QByteArray)),
-                        this,SLOT(updateDebugInfo(QByteArray)));
+                //connect(dlink,SIGNAL(RecieveRTK(QByteArray)),
+                  //      this,SLOT(updateDebugInfo(QByteArray)));
             }
         }
     }

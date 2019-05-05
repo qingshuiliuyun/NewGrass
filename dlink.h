@@ -11,7 +11,7 @@
 #include "QTimer"
 #include "QDir"
 #include "Mission/mission.h"
-
+#include "QThread"
 
 #define TXBUFFSIZE 1000
 #define RXBUFFSIZE 1000
@@ -188,6 +188,7 @@ public:
 
         _heardbeat HeardBeat;
         _parameter Parameter;
+        _gps RTK;
         _gps GPS;
         _gps SIM;//simulation point
         _ultrasonic Ultrasonic;
@@ -204,6 +205,9 @@ public:
 
         uint32_t ReceiveCount;
         uint32_t ReceiveHz;
+
+        uint32_t TransmitCount;
+        uint32_t TransmitHz;
 
     }_vehicle;
 
@@ -228,7 +232,7 @@ public:
     void RecordReplay(void);
 
     uint16_t CRC_CheckSum (uint8_t *pBuffer,uint8_t Size);
-
+    uint16_t CRC_Sending(uint8_t *pBuffer,uint8_t Size);
     void R_Decode(QByteArray data);
 
     _vehicle readvehicle();
@@ -242,7 +246,7 @@ public:
     void SimuStart(void);
     void SimuStop(void);
 
-
+    void RTK_SendThread(void);
 
     _vehicle vehicle;
     _frametypedef dframe;
@@ -256,7 +260,8 @@ public:
 
     bool isSendWayPointCompelet = false;
     bool isGetNextWayPoint = true;
-
+    uint32_t SerialPortTx_Count;
+    uint32_t SerialPortTx_Hz;
 
 signals:
 
@@ -292,9 +297,9 @@ public slots:
     void SendWayPointThread(void);
 
     void SimuTimerTimeOut(void);
-
+    void Timer_1HzTimeOut(void);
     void DataTimerTimeOut(void);
-
+    void RTKSendTimerTimeOut(void);
 private:
     QSerialPort *serialPort = nullptr;
     QSerialPort *RTKPort = nullptr;
@@ -305,12 +310,16 @@ private:
 
     QTimer *WayPointTimer = nullptr;
     QTimer *DataTimer = nullptr;
+    QTimer *RTKSendTimer = nullptr;
+
+
 
     int SendWayPointCount = 0;
 
     QTimer *SimuTimer = nullptr;
+    QTimer *Timer_1Hz = nullptr;
 
-    QFile *LogFile = NULL;
+    QFile *LogFile = nullptr;
 };
 
 #endif // DLINK_H

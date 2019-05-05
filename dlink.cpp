@@ -29,9 +29,19 @@ DLink::DLink(QObject *parent) : QObject(parent)
     connect(SimuTimer,SIGNAL(timeout()),
             this,SLOT(SimuTimerTimeOut()));
 
+    Timer_1Hz = new QTimer();
+    connect(Timer_1Hz,SIGNAL(timeout()),
+            this,SLOT(Timer_1HzTimeOut()));
+    Timer_1Hz->start(1000);//1hz
+
+
     DataTimer = new QTimer();
     connect(DataTimer,SIGNAL(timeout()),
             this,SLOT(DataTimerTimeOut()));
+
+    RTKSendTimer = new QTimer();
+    connect(RTKSendTimer,SIGNAL(timeout()),
+            this,SLOT(RTKSendTimerTimeOut()));
 
 }
 
@@ -44,6 +54,15 @@ DLink::~DLink()
     SimuTimer->stop();
     delete SimuTimer;
     SimuTimer = NULL;
+
+    Timer_1Hz->stop();
+    delete Timer_1Hz;
+    Timer_1Hz = NULL;
+
+    RTKSendTimer->stop();
+    delete RTKSendTimer;
+    RTKSendTimer = NULL;
+
 
     if (serialPort)
     {
@@ -169,9 +188,12 @@ void DLink::setup_RTKport(const QString port, qint32 baudrate, QSerialPort::Pari
         RTKPort->setStopBits(QSerialPort::OneStop);
 
         connect(RTKPort, &QSerialPort::readyRead, this, &DLink::RTKreadPendingDatagrams);
+
+        RTKSendTimer->start(50);//50ms
     }
     else
     {
+        RTKSendTimer->stop();
         delete RTKPort;
         RTKPort = nullptr;
     }
@@ -184,6 +206,8 @@ bool DLink::state_RTKport()
 
 void DLink::stop_RTKport()
 {
+    RTKSendTimer->stop();
+
     RTKPort->close();
     delete RTKPort;
     RTKPort = nullptr;
@@ -193,13 +217,11 @@ void DLink::stop_RTKport()
 
 uint16_t DLink::CRC_CheckSum (uint8_t *pBuffer,uint8_t Size)
 {
-
     uint16_t poly = 0x8408;
     uint16_t crc = 0;
     uint8_t carry;
     uint8_t i_bits;
     uint8_t j;
-
   for (j=0; j<Size; j++)
     {
         crc = (uint16_t)(crc ^ ((uint8_t)pBuffer[j]));
@@ -216,18 +238,44 @@ uint16_t DLink::CRC_CheckSum (uint8_t *pBuffer,uint8_t Size)
     return crc;
 }
 
+
+uint16_t DLink::CRC_Sending(uint8_t *pBuffer,uint8_t Size)
+{
+    uint16_t poly = 0x8408;
+    uint16_t crc = 0;
+    uint8_t carry;
+    uint8_t i_bits;
+    uint8_t j;
+  for (j=0; j<Size; j++)
+    {
+        crc = (uint16_t)(crc ^ ((uint8_t)pBuffer[j]));
+        for (i_bits=0; i_bits<8; i_bits++)
+        {
+            carry = (uint8_t)(crc & 1);
+            crc = (uint16_t)(crc / 2);
+            if (carry)
+            {
+                crc = (uint16_t)(crc^poly);
+            }
+        }
+    }
+    return crc;
+}
+
+
+
 //|EB 90|CIDL CIDH|SYN|LENL LENH|Payload|CKL CKH|
 
 void DLink::readPendingDatagrams(void)
 {
     static QByteArray SerialData;
-    if(SerialData.size()>40960000)//40MByte
+    if(SerialData.size()>4096000)//4MByte
     {
         SerialData.clear();
     }
     QByteArray datagram = serialPort->readAll();
 
-    qDebug() << datagram;
+    //qDebug() << datagram;
     vehicle.ReceiveCount += datagram.size();
 
     if(LogFile)
@@ -362,11 +410,13 @@ void DLink::R_Decode(QByteArray data)
          {
               data = data.mid(7);
               memcpy(&vehicle.GPS,data,dframe.LEN-9);//从第7个复制
+              emit dlinkUpdate();
+         }break;
 
-              //qDebug() << vehicle.GPS.fixtype
-              //         <<vehicle.GPS.latitude ;
-
-              //qDebug() << "recieve gps";
+         case 0x0021://rtk
+         {
+              data = data.mid(7);
+              memcpy(&vehicle.RTK,data,dframe.LEN-9);//从第7个复制
               emit dlinkUpdate();
          }break;
 
@@ -468,6 +518,7 @@ void DLink::SendCMD(uint32_t ID,uint32_t Value)
 
     if(serialPort)
     {
+       SerialPortTx_Count += DataCount;
        serialPort->write(DataToSend,DataCount);
        qInfo() << "Send CMD" << ID << Value;
     }
@@ -507,6 +558,7 @@ void DLink::SendParameter(void)
 
     if(serialPort)
     {
+       SerialPortTx_Count += DataCount;
        serialPort->write(DataToSend,DataCount);
        qInfo() << "Send parameter";
     }
@@ -547,6 +599,7 @@ void DLink::SendWayPoint(void)
 
     if(serialPort)
     {
+       SerialPortTx_Count += DataCount;
        qDebug() << "way point id:" << vehicle.WayPoint.id;
        emit SendWaypointNum(vehicle.WayPoint.id);
        serialPort->write(DataToSend,DataCount);
@@ -649,6 +702,7 @@ void DLink::SendSimu(void)
 
     if(serialPort)
     {
+       SerialPortTx_Count += DataCount;
        serialPort->write(DataToSend,DataCount);
        //qInfo() << "send simu";
     }
@@ -683,24 +737,40 @@ void DLink::DataTimerTimeOut(void)
     vehicle.ReceiveCount = 0;
 }
 
-
+QByteArray RTKRawData;
 void DLink::RTKreadPendingDatagrams(void)
 {
-     static QByteArray SerialData;
-    if(SerialData.size()>40960000)//40MByte
+    if(RTKRawData.size()>4096000)//40MByte
     {
-        SerialData.clear();
+        RTKRawData.clear();
     }
     QByteArray datagram = RTKPort->readAll();
     //qDebug() << datagram;
+    RTKRawData.append(datagram);
+    //emit RecieveRTK(datagram);
+}
 
-    emit RecieveRTK(datagram);
+void DLink::Timer_1HzTimeOut(void)
+{
+     SerialPortTx_Hz = SerialPortTx_Count;
+     SerialPortTx_Count = 0;
+     //qInfo() << "Tx: " << SerialPortTx_Hz << " Bps";
+}
 
-    if(serialPort)
+void DLink::RTK_SendThread(void)
+{
+
+}
+
+
+
+void DLink::RTKSendTimerTimeOut(void)
+{
+
+    if(RTKRawData.size() > 20)//最小包是20个数
     {
-
         union{uint8_t B[2];uint16_t D;}src;
-        char  DataToSend[256+9];
+        char  DataToSend[5000];
         uint16_t DataCount = 0;
 
         DataToSend[DataCount++] = 0xEB;
@@ -712,27 +782,62 @@ void DLink::RTKreadPendingDatagrams(void)
 
         DataToSend[DataCount++] = vehicle.U2.txsyn++;
 
-        src.D = datagram.size();
-        DataToSend[DataCount++] = src.B[0];
-        DataToSend[DataCount++] = src.B[1];
 
-        memcpy(DataToSend + DataCount,datagram.data(),datagram.size());
-        DataCount += datagram.size();
+        if(RTKRawData.size() > 50)
+        {
+            src.D = 50;
+            DataToSend[DataCount++] = src.B[0];
+            DataToSend[DataCount++] = src.B[1];
+        }
+        else
+        {
+            src.D = RTKRawData.size();
+            DataToSend[DataCount++] = src.B[0];
+            DataToSend[DataCount++] = src.B[1];
+        }
+
+        memcpy(DataToSend + DataCount,RTKRawData.data(),src.D);
+        DataCount += src.D;
+
+        RTKRawData = RTKRawData.mid(src.D);
 
         src.D = CRC_CheckSum((uint8_t *)DataToSend,DataCount);
         DataToSend[DataCount++] = src.B[0];
         DataToSend[DataCount++] = src.B[1];
 
-        serialPort->write(DataToSend,DataCount);
-    }
-    else
-    {
-        qInfo() << "Please Open SerialPort first";
-    }
 
+
+        if(serialPort)
+        {
+            if(!serialPort->isTransactionStarted())
+            {
+
+
+                qDebug() << "buff len:" << RTKRawData.size()
+                         << "tran len:" << DataCount;
+                SerialPortTx_Count += DataCount;
+                if(serialPort->write(DataToSend,DataCount) != -1)
+                {
+                    //qDebug() << "ok";
+                }
+                else {
+                    qDebug() << "error";
+                }
+                //qDebug()<< "serial port sending";
+            }
+            else
+            {
+                qDebug()<< "serial port is busy";
+            }
+        }
+        else
+        {
+            RTKRawData.clear();
+            qInfo() << "Please Open SerialPort first";
+        }
+    }
 
 }
-
 
 
 

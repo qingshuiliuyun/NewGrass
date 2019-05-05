@@ -64,17 +64,18 @@ void dlinkinspector::setString(QString str)
 
 void dlinkinspector::setTextBrowser(QTextBrowser *browser)
 {
-    browser = ui->DebugInfo;
+    //browser = ui->DebugInfo;
 }
 
 void dlinkinspector::setDebugInfo(QString str)
 {
-
+/*
 
     ui->DebugInfo->insertPlainText(str);
     QTextCursor cursor=ui->DebugInfo->textCursor();
     cursor.movePosition(QTextCursor::End);
     ui->DebugInfo->setTextCursor(cursor);
+    */
 }
 
 
